@@ -11,8 +11,9 @@ An Alfred workflow for quick access to Fastview.ai GitHub and Linear resources.
 - `fv` - Opens GitHub pull requests for the sparrow-ml repository
 
 ### Issue Creation
-- `fv [team] [priority] <title>` - Create a new Linear issue
+- `fv [team] [project] [assignee] [priority] <title>` - Create a new Linear issue
   - Example: `fv eng p1 Fix authentication bug`
+  - Example: `fv eng canvas oac p1 Fix authentication bug`
 
 ## Setup
 
