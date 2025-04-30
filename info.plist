@@ -273,7 +273,7 @@
 				<key>text</key>
 				<string>{query}</string>
 				<key>title</key>
-				<string>Created issue</string>
+				<string>New issue</string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.output.notification</string>
@@ -290,7 +290,7 @@
 				<key>keyword</key>
 				<string>fv</string>
 				<key>subtext</key>
-				<string>Usage: [team] [priority] &lt;title&gt;</string>
+				<string>Usage: [team] [project] [assignee] [priority] &lt;title&gt;</string>
 				<key>text</key>
 				<string>🛠️ New issue: {query}</string>
 				<key>withspace</key>
@@ -317,8 +317,9 @@ An Alfred workflow for quick access to Fastview.ai GitHub and Linear resources.
 - `fv` - Opens GitHub pull requests for the sparrow-ml repository
 
 ### Issue Creation
-- `fv [team] [priority] &lt;title&gt;` - Create a new Linear issue
+- `fv [team] [project] [assignee] [priority] &lt;title&gt;` - Create a new Linear issue
   - Example: `fv eng p1 Fix authentication bug`
+  - Example: `fv eng canvas oac p1 Fix authentication bug`
 
 ## Setup
 
@@ -471,7 +472,7 @@ Created by Omar Chehab (@oac)</string>
 		<string>NODE_PATH</string>
 	</array>
 	<key>version</key>
-	<string>0</string>
+	<string>1</string>
 	<key>webaddress</key>
 	<string>https://github.com/fastview-ai/fv-alfred</string>
 </dict>

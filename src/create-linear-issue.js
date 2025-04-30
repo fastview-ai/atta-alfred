@@ -1,67 +1,64 @@
 const fs = require('fs');
+const { execSync } = require("child_process");
+
+const dryRun = (() => {
+  try {
+    if (process.env.DRY_RUN) return true;
+    const gitStatus = execSync("git status --porcelain").toString();
+    return gitStatus
+      .split("\n")
+      .some((line) => line.trim().endsWith("create-linear-issue.js"));
+  } catch (e) {
+    if (e.code === "ENOENT" || e.code === "ENOTDIR") {
+      return true;
+    }
+    return false;
+  }
+})();
 
 const linearToken = process.env.LINEAR_API_KEY;
 
-async function createIssue(teamId, title, priority) {
-  try {
-    // Load saved preferences
-    let savedPrefs = {};
-    try {
-      savedPrefs = JSON.parse(fs.readFileSync(".linear-prefs.json"));
-    } catch (e) {
-      // File doesn't exist yet, use defaults
-    }
+// Map priority strings to Linear priority numbers
+const priorities = [
+  { label: "p0", id: 0 },
+  { label: "0", id: 0 },
+  { label: "p1", id: 1 },
+  { label: "1", id: 1 },
+  { label: "urgent", id: 1 },
+  { label: "u", id: 1 },
+  { label: "p2", id: 2 },
+  { label: "2", id: 2 },
+  { label: "high", id: 2 },
+  { label: "h", id: 2 },
+  { label: "p3", id: 3 },
+  { label: "3", id: 3 },
+  { label: "medium", id: 3 },
+  { label: "m", id: 3 },
+  { label: "p4", id: 4 },
+  { label: "4", id: 4 },
+  { label: "low", id: 4 },
+  { label: "l", id: 4 },
+];
 
-    // Use provided values or fall back to saved preferences
-    teamId = teamId || savedPrefs.lastTeamId;
-    priority = priority || savedPrefs.lastPriority;
-
-    // Save preferences for next time
-    try {
-      fs.writeFileSync(
-        ".linear-prefs.json",
-        JSON.stringify({
-          lastTeamId: teamId,
-          lastPriority: priority,
-        })
-      );
-    } catch (e) {
-      // Do nothing
-    }
-
-    // Get current user ID first
-    const userResponse = await fetch("https://api.linear.app/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: linearToken,
-      },
-      body: JSON.stringify({
-        query: `
-          query {
-            viewer {
-              id
-            }
-          }
-        `,
-      }),
-    });
-
-    if (!userResponse.ok) {
-      throw new Error("Failed to fetch user info");
-    }
-
-    const userData = await userResponse.json();
-    const userId = userData.data.viewer.id;
-
-    const response = await fetch("https://api.linear.app/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: linearToken,
-      },
-      body: JSON.stringify({
-        query: `
+async function createIssue(teamId, projectId, assigneeId, priority, title) {
+  if (dryRun) {
+    console.log(
+      teamId?.slice(0, 4) || null,
+      projectId?.slice(0, 4) || null,
+      assigneeId?.slice(0, 4) || null,
+      priority,
+      title
+    );
+  }
+  const doFetch = dryRun ? console.log : fetch;
+  const response = await doFetch("https://api.linear.app/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: linearToken,
+    },
+    body: JSON.stringify({
+      query: `
           mutation CreateIssue($input: IssueCreateInput!) {
             issueCreate(input: $input) {
               success
@@ -69,36 +66,39 @@ async function createIssue(teamId, title, priority) {
                 id
                 identifier
                 url
+                assignee {
+                  displayName
+                }
               }
             }
           }
         `,
-        variables: {
-          input: {
-            teamId,
-            title,
-            priority,
-            assigneeId: userId,
-          },
+      variables: {
+        input: {
+          teamId,
+          projectId,
+          assigneeId,
+          priority,
+          title,
         },
-      }),
-    });
+      },
+    }),
+  });
 
-    if (!response.ok) {
-      throw new Error("Failed to create Linear issue");
-    }
-
-    const { data } = await response.json();
-
-    return data.issueCreate.issue;
-  } catch (error) {
-    console.error(error);
-    console.log("Failed to create the issue in Linear.");
-    process.exit(1);
+  if (!response?.ok) {
+    throw new Error("Fetch Error: " + (response.statusText ?? "unknown"));
   }
+
+  const { data, errors } = await response.json();
+  if (errors) {
+    console.log(`GraphQL Error: ${errors[0].message}`);
+    throw new Error(errors[0].message);
+  }
+
+  return data.issueCreate.issue;
 }
 
-async function getTeamId(teamKey) {
+async function getMetadata() {
   const response = await fetch("https://api.linear.app/graphql", {
     method: "POST",
     headers: {
@@ -108,12 +108,33 @@ async function getTeamId(teamKey) {
     body: JSON.stringify({
       query: `
         query {
-        teams {
+          teams {
             nodes {
-            id
-            key
+              id
+              key
+              name
             }
-        }
+          }
+          projects {
+            nodes {
+              id
+              name
+              teams {
+                nodes {
+                  id
+                }
+              }
+            }
+          }
+          users {
+            nodes {
+              id
+              name
+              email
+              displayName
+              isMe
+            }
+          }
         }
     `,
     }),
@@ -124,16 +145,37 @@ async function getTeamId(teamKey) {
   }
 
   const { data } = await response.json();
-  const team = data.teams.nodes.find((t) => t.key.toLowerCase() === teamKey.toLowerCase());
 
-  if (!team) {
-    throw new Error(`Team with key ${teamKey} not found`);
-  }
-
-  return team.id;
+  return {
+    teams: data.teams.nodes,
+    projects: data.projects.nodes,
+    users: data.users.nodes,
+    priorities,
+  };
 }
 
-if (require.main === module) {
+function readPrefs() {
+  // Load saved preferences
+  let savedPrefs = null;
+  try {
+    savedPrefs = JSON.parse(fs.readFileSync(".linear-prefs.json"));
+  } catch (e) {
+    if (e.code !== "ENOENT" && !(e instanceof SyntaxError)) {
+      throw e;
+    }
+  }
+
+  return savedPrefs;
+}
+
+function writePrefs(prefs) {
+  fs.writeFileSync(
+    ".linear-prefs.json",
+    JSON.stringify(prefs, null, dryRun ? 2 : null)
+  );
+}
+
+async function main() {
   try {
     const input = process.argv[2];
 
@@ -143,71 +185,130 @@ if (require.main === module) {
       process.exit(1);
     }
 
-    const match = input.match(
-      /^(?:(\w{3})\s+)?(?:(p?[uhml0-4]|urgent|high|medium|low)\s+)?(.+)$/i
-    );
+    const metadata = await getMetadata();
+    const words = input.split(" ");
+    const firstFourWords = words.slice(0, 4);
+    const remainingWords = words.slice(4);
 
-    if (!match) {
-      console.error("Invalid input format");
-      console.log("Usage: [team] [priority] <title>");
-      process.exit(1);
+    let teamId = null;
+    let projectId = null;
+    let assigneeId = null;
+    let priorityId = null;
+    let title = null;
+
+    function findMatch(word, collection, matcher) {
+      if (!word || !collection) return null;
+      return collection.find((item) => matcher(item, word));
     }
 
-    const [_, teamKey, priorityStr, title] = match;
-
-    if (!title.trim()) {
-      console.error("Invalid input format");
-      console.log("Usage: [team] [priority] <title>");
-      process.exit(1);
+    function fuzzyMatch(a, b) {
+      const sanitise = (x) => x.replace(/[\s_-]/g, "").toLowerCase();
+      return sanitise(a).startsWith(sanitise(b));
     }
 
-
-    // Map priority strings to Linear priority numbers
-    const priorityMap = {
-      p0: 0,
-      0: 0,
-      p1: 1,
-      1: 1,
-      urgent: 1,
-      u: 1,
-      p2: 2,
-      2: 2,
-      high: 2,
-      h: 2,
-      p3: 3,
-      3: 3,
-      medium: 3,
-      m: 3,
-      p4: 4,
-      4: 4,
-      low: 4,
-      l: 4,
+    const matchers = {
+      teams: (team, word) =>
+        [team.name, team.key].filter(Boolean).some((s) => fuzzyMatch(s, word)),
+      projects: (project, word) =>
+        (teamId == null ||
+          project.teams.nodes.some((team) => team.id === teamId)) &&
+        fuzzyMatch(project.name, word),
+      users: (user, word) =>
+        [user.name, user.displayName, user.email.split("@")[0]]
+          .filter(Boolean)
+          .some((s) => fuzzyMatch(s, word)),
+      priorities: (priority, word) => fuzzyMatch(priority.label, word),
     };
 
-    const priority = priorityStr
-      ? priorityMap[priorityStr.toLowerCase()]
-      : undefined;
+    const setters = {
+      teams: (team) => {
+        teamId = team.id;
+      },
+      projects: (project) => {
+        projectId = project.id;
+      },
+      users: (user) => {
+        assigneeId = user.id;
+      },
+      priorities: (priority) => {
+        priorityId = priority.id;
+      },
+    };
 
-    const createIssuePromise = teamKey
-      ? getTeamId(teamKey).then((teamId) =>
-          createIssue(teamId, title, priority)
-        )
-      : createIssue(null, title, priority);
+    // Try to match against each type
+    for (const [key, matcher] of Object.entries(matchers)) {
+      // Process each word
+      for (let i = firstFourWords.length - 1; i >= 0; i--) {
+        const word = firstFourWords[i];
 
-    createIssuePromise
-      .then((issue) => {
-        console.log(issue.identifier);
-      })
-      .catch((error) => {
-        console.error(error);
-        console.log(
-          "Failed to create the issue."
-        );
-        process.exit(1);
-      });
+        const collection = metadata[key];
+        const match = findMatch(word, collection, matcher);
+
+        if (match) {
+          setters[key](match);
+          firstFourWords.splice(i, 1);
+          break;
+        }
+      }
+    }
+    remainingWords.unshift(...firstFourWords);
+
+    const pastPrefs = readPrefs() || {};
+
+    if (teamId == null && projectId == null) {
+      if (pastPrefs.projectsChoice) projectId = pastPrefs.projectsChoice;
+      else teamId = pastPrefs.teamsChoice;
+    } else if (projectId == null) {
+      projectId = pastPrefs.projectsChoice;
+    } else if (teamId == null) {
+      teamId = pastPrefs.teamsChoice;
+    }
+
+    if (assigneeId == null) {
+      assigneeId = pastPrefs.usersChoice;
+    }
+
+    if (priorityId == null) {
+      priorityId = pastPrefs.prioritiesChoice;
+    }
+
+    writePrefs({
+      ...metadata,
+      teamsChoice: teamId,
+      projectsChoice: projectId,
+      usersChoice: assigneeId,
+      prioritiesChoice: priorityId,
+    });
+
+    title = remainingWords.map((word) => word.trim()).join(" ");
+    if (!title) {
+      console.log("missing title...");
+      process.exit(1);
+    }
+
+    try {
+      const issue = await createIssue(
+        teamId,
+        projectId,
+        assigneeId,
+        priorityId,
+        title
+      );
+      console.log(
+        `${issue.identifier} assigned to ${issue.assignee.displayName}`
+      );
+    } catch (error) {
+      console.error(error);
+      console.log("Failed to create the issue.");
+      process.exit(1);
+    }
   } catch (error) {
     console.error(error);
     console.log("An unexpected error occurred.");
     process.exit(1);
   }
+}
+
+if (require.main === module) {
+  main();
 }
