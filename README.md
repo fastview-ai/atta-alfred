@@ -1,13 +1,14 @@
 # Fastview.ai Alfred Workflow
 
-An Alfred workflow for quick access to Fastview.ai GitHub and Linear resources.
+An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull requests, and Vercel deployments.
 
 ## Features
 
 ### Quick Navigation
 - `fv` - Shows a list of searchable resources
-- `fv` - Opens Linear issues for the Fastview team
-- `fv` - Opens GitHub pull requests for the sparrow-ml repository
+- `fv` - Opens Linear issues
+- `fv` - Opens GitHub pull requests
+- `fv` - Opens Vercel deployments
 
 ### Issue Creation
 - `fv -team -project -assignee -priority title` - Create a new Linear issue
@@ -28,10 +29,15 @@ An Alfred workflow for quick access to Fastview.ai GitHub and Linear resources.
   - Set as `LINEAR_API_KEY` in workflow configuration
   - Format: `lin_api_...`
 
+- **Vercel Token**: Generata token from [Vercel Settings](https://vercel.com/account/settings/tokens)
+  - Set as `VERCEL_API_KEY` in workflow configuration
+  - Format: `2io...`
+
 ### Default Variables
 The workflow comes preconfigured with:
 - GitHub Repository: `fastview-ai/sparrow-ml`
 - Linear Team: `fastview`
+- Vercel Project: `fastviewai/sparrow-ml`
 
 ## Development
 

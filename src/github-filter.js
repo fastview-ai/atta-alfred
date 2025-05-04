@@ -72,11 +72,7 @@ async function fetchGithubFilter() {
 
     return pulls
       .map((pr) => ({
-        title: [
-          getEmoji(pr.state, pr.merged_at),
-          pr.head.ref.split("/")?.[0],
-          pr.title,
-        ]
+        title: [getEmoji(pr.state, pr.merged_at), pr.head.ref, pr.title]
           .filter(Boolean)
           .join(" "),
         subtitle: ["\t⮑", pr.user.login, "•", fmtDate(pr.updated_at)]
@@ -90,17 +86,19 @@ async function fetchGithubFilter() {
         source: "gh",
         date: new Date(pr.updated_at),
       }))
-      .concat([{
-        title: "Pull requests",
-        subtitle: githubRepo,
-        arg: `https://www.github.com/${githubRepo}/pulls`,
-        icon: {
-          path: "./src/github.png",
-        },
+      .concat([
+        {
+          title: "Pull requests",
+          subtitle: githubRepo,
+          arg: `https://github.com/${githubRepo}/pulls`,
+          icon: {
+            path: "./src/github.png",
+          },
 
-        source: "gh",
-        date: new Date(0),
-      }])
+          source: "gh",
+          date: new Date(0),
+        },
+      ])
       .sort((a, b) => {
         return new Date(b.date) - new Date(a.date);
       });
@@ -108,7 +106,7 @@ async function fetchGithubFilter() {
     error.scriptFilterItem = {
       title: "Pull requests",
       subtitle: "Configure Workflow with your GitHub API Key",
-      arg: `https://www.github.com/${githubRepo}/pulls`,
+      arg: "https://github.com/settings/tokens",
       icon: {
         path: "./src/github.png",
       },

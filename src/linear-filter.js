@@ -156,7 +156,7 @@ async function fetchLinearFilter() {
     error.scriptFilterItem = {
       title: "Issues",
       subtitle: "Configure Workflow with your Linear API Key",
-      arg: `https://linear.app/${linearTeam}`,
+      arg: `https://linear.app/${LINEAR_TEAM}/settings/account/security/api-keys/new`,
       icon: {
         path: "./src/linear.png",
       },
