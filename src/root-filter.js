@@ -1,10 +1,8 @@
 /**
- * Usage: node src/root-filter.js [gh|li]
- * $ node src/root-filter.js
- * $ node src/root-filter.js gh
- * $ node src/root-filter.js li
+ * Usage: node src/root-filter.js
  */
 
+const vercelFilter = require("./vercel-filter");
 const githubFilter = require("./github-filter");
 const linearFilter = require("./linear-filter");
 
@@ -12,7 +10,11 @@ async function fetchRootFilter(sourceFilter) {
   try {
     const items = [];
 
-    const [githubResult, linearResult] = await Promise.all([
+    const [githubResult, linearResult, vercelResult] = await Promise.all([
+      vercelFilter().catch((error) => {
+        console.error(error);
+        return [error.scriptFilterItem];
+      }),
       githubFilter().catch((error) => {
         console.error(error);
         return [error.scriptFilterItem];
@@ -23,16 +25,15 @@ async function fetchRootFilter(sourceFilter) {
       }),
     ]);
 
-    items.push(...githubResult, ...linearResult);
-
+    items.push(...vercelResult, ...githubResult, ...linearResult);
+    
     return items
       .filter((item) => sourceFilter == null || item.source === sourceFilter)
       .sort((a, b) => new Date(b.date) - new Date(a.date));
   } catch (error) {
     error.scriptFilterItem = {
       title: "Unknown error",
-      subtitle: "Configure Workflow with Keys",
-      arg: `https://www.github.com/${githubRepo}/`,
+      subtitle: error.message,
       icon: {
         path: "./src/fastview.png",
       },

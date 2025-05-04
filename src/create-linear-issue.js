@@ -186,9 +186,9 @@ async function main() {
     }
 
     const metadata = await getMetadata();
-    const words = input.split(" ");
-    const firstFourWords = words.slice(0, 4);
-    const remainingWords = words.slice(4);
+    const inputWords = input.split(" ");
+    const paramWords = inputWords.filter((word) => word.startsWith("-"));
+    const titleWords = inputWords.filter((word) => !word.startsWith("-"));
 
     let teamId = null;
     let projectId = null;
@@ -201,10 +201,10 @@ async function main() {
       return collection.find((item) => matcher(item, word));
     }
 
-    function fuzzyMatch(a, b) {
-      const sanitise = (x) => x.replace(/[\s_-]/g, "").toLowerCase();
-      return sanitise(a).startsWith(sanitise(b));
-    }
+    const sanitise = (x) => x.replace(/[\s_-]/g, "").toLowerCase();
+
+    const fuzzyMatch = (string, substr) =>
+      sanitise(string).startsWith(sanitise(substr));
 
     const matchers = {
       teams: (team, word) =>
@@ -238,20 +238,20 @@ async function main() {
     // Try to match against each type
     for (const [key, matcher] of Object.entries(matchers)) {
       // Process each word
-      for (let i = firstFourWords.length - 1; i >= 0; i--) {
-        const word = firstFourWords[i];
+      for (let i = paramWords.length - 1; i >= 0; i--) {
+        const word = paramWords[i];
 
         const collection = metadata[key];
         const match = findMatch(word, collection, matcher);
 
         if (match) {
           setters[key](match);
-          firstFourWords.splice(i, 1);
+          paramWords.splice(i, 1);
           break;
         }
       }
     }
-    remainingWords.unshift(...firstFourWords);
+    titleWords.unshift(...paramWords);
 
     const pastPrefs = readPrefs() || {};
 
@@ -280,7 +280,7 @@ async function main() {
       prioritiesChoice: priorityId,
     });
 
-    title = remainingWords.map((word) => word.trim()).join(" ");
+    title = titleWords.map((word) => word.trim()).join(" ");
     if (!title) {
       console.log("missing title...");
       process.exit(1);
