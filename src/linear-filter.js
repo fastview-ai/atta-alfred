@@ -139,7 +139,7 @@ async function fetchLinearFilter() {
       .concat([
         {
           title: "Issues",
-          subtitle: linearTeam,
+          subtitle: "",
           arg: `https://linear.app/${linearTeam}`,
           icon: {
             path: "./src/linear.png",

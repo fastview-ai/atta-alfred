@@ -1,5 +1,5 @@
 /**
- * Usage: node src/root-filter.js
+ * Usage: node src/root-filter.js [gh|li|vc]
  */
 
 const vercelFilter = require("./vercel-filter");
@@ -26,7 +26,7 @@ async function fetchRootFilter(sourceFilter) {
     ]);
 
     items.push(...vercelResult, ...githubResult, ...linearResult);
-    
+
     return items
       .filter((item) => sourceFilter == null || item.source === sourceFilter)
       .sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -50,7 +50,7 @@ module.exports = fetchRootFilter;
 if (require.main === module) {
   const query = process.argv[2];
   const sourceFilter =
-    query.match(/^(?<filter>gh|li)\b/)?.groups?.filter ?? null;
+    query.match(/^(?<filter>gh|li|vc)\b/)?.groups?.filter ?? null;
   fetchRootFilter(sourceFilter)
     .then((items) => console.log(JSON.stringify({ items })))
     .catch(
