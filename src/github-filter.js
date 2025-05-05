@@ -89,7 +89,7 @@ async function fetchGithubFilter() {
       .concat([
         {
           title: "Pull requests",
-          subtitle: githubRepo,
+          subtitle: "",
           arg: `https://github.com/${githubRepo}/pulls`,
           icon: {
             path: "./src/github.png",

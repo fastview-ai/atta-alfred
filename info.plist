@@ -21,6 +21,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>2070F8C5-B59A-4C15-947E-C003823F77A8</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>B4E70927-45E2-40F9-A4F2-FD6516B44DE5</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>32AC4E08-866E-4724-B41A-AAC8167C415C</key>
 		<array>
 			<dict>
@@ -100,27 +113,6 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>browser</key>
-				<string></string>
-				<key>skipqueryencode</key>
-				<false/>
-				<key>skipvarencode</key>
-				<false/>
-				<key>spaces</key>
-				<string></string>
-				<key>url</key>
-				<string>{var:url}</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
-			<key>uid</key>
-			<string>D7001DE8-27F5-41C0-93B3-D8282B029029</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>alfredfiltersresults</key>
 				<true/>
 				<key>alfredfiltersresultsmatchmode</key>
@@ -144,7 +136,7 @@
 				<key>queuemode</key>
 				<integer>1</integer>
 				<key>runningsubtext</key>
-				<string></string>
+				<string>Loading...</string>
 				<key>script</key>
 				<string>${NODE_PATH:-node} ./src/root-filter.js "$1"</string>
 				<key>scriptargtype</key>
@@ -154,7 +146,7 @@
 				<key>subtext</key>
 				<string>The analytics platform built for humans.</string>
 				<key>title</key>
-				<string>Loading...</string>
+				<string>Fastview</string>
 				<key>type</key>
 				<integer>11</integer>
 				<key>withspace</key>
@@ -170,21 +162,21 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>argumenttype</key>
-				<integer>2</integer>
-				<key>keyword</key>
-				<string>fv</string>
-				<key>subtext</key>
+				<key>browser</key>
 				<string></string>
-				<key>text</key>
-				<string>Issues</string>
-				<key>withspace</key>
+				<key>skipqueryencode</key>
 				<false/>
+				<key>skipvarencode</key>
+				<false/>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>{var:url}</string>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
+			<string>alfred.workflow.action.openurl</string>
 			<key>uid</key>
-			<string>D58E53AE-54F6-42EE-A6FC-85D449D2FC33</string>
+			<string>D7001DE8-27F5-41C0-93B3-D8282B029029</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -206,6 +198,27 @@
 			<string>alfred.workflow.action.openurl</string>
 			<key>uid</key>
 			<string>84D6F323-DE9B-4679-91DE-26BD4730E3D0</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>fv</string>
+				<key>subtext</key>
+				<string></string>
+				<key>text</key>
+				<string>Issues</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>D58E53AE-54F6-42EE-A6FC-85D449D2FC33</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -319,6 +332,27 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>fv</string>
+				<key>subtext</key>
+				<string></string>
+				<key>text</key>
+				<string>Deployments</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>5CA7FF80-530F-4C54-BE26-D4CD697EE583</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>browser</key>
 				<string></string>
 				<key>skipqueryencode</key>
@@ -340,21 +374,70 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>argumenttype</key>
+				<key>alfredfiltersresults</key>
+				<true/>
+				<key>alfredfiltersresultsmatchmode</key>
 				<integer>2</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
 				<key>keyword</key>
-				<string>fv</string>
+				<string>fv fg</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading...</string>
+				<key>script</key>
+				<string>${NODE_PATH:-node} ./src/figma-filter.js "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
 				<key>subtext</key>
 				<string></string>
-				<key>text</key>
-				<string>Deployments</string>
+				<key>title</key>
+				<string>Figma comments</string>
+				<key>type</key>
+				<integer>11</integer>
 				<key>withspace</key>
-				<false/>
+				<true/>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
+			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
-			<string>5CA7FF80-530F-4C54-BE26-D4CD697EE583</string>
+			<string>2070F8C5-B59A-4C15-947E-C003823F77A8</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>skipqueryencode</key>
+				<false/>
+				<key>skipvarencode</key>
+				<false/>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>{var:url}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>B4E70927-45E2-40F9-A4F2-FD6516B44DE5</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -362,48 +445,44 @@
 	<key>readme</key>
 	<string># Fastview.ai Alfred Workflow
 
-An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull requests, and Vercel deployments.
+An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull requests, Vercel deployments, and Figma comments.
+
+## Required Configuration
+
+- **GitHub Personal access tokens**:
+  - Generate new token with max expiry, owned by Fastview-AI, with access to fastview-ai/sparrow-ml repository
+  - Request GitHub org admin for approval
+  - https://github.com/settings/tokens
+
+- **Linear Personal API Key**:
+  - Generate an API Key from **Linear &gt; Settings &gt; Account &gt; Security &amp; Access &gt; Personal API Key**
+  - https://linear.app/fastview/settings/account/security/api-keys/new
+
+- **Vercel Token**:
+  - Generate a token from **Vercel &gt; Settings &gt; Tokens**
+  - https://vercel.com/account/settings/tokens
+
+- **Figma Personal Access Token**:
+  - Generate a personal access token **Figma &gt; Profile / Settings &gt; Security tab &gt; Personal Access Token**
+  - https://figma.com/
+
+### Development
+
+This workflow uses Node.js for script execution. By default it uses `node` command but you can change it by setting the `NODE_PATH` variable.
 
 ## Features
 
 ### Quick Navigation
 - `fv` - Shows a list of searchable resources
-- `fv` - Opens Linear issues
-- `fv` - Opens GitHub pull requests
-- `fv` - Opens Vercel deployments
+- `fv` - Searches Linear issues by issue identifier or title
+- `fv` - Searches GitHub pull requests by branch name or title
+- `fv` - Searches Vercel deployments by branch name or title
+- `fv` - Searches Figma comments by comment text
 
 ### Issue Creation
 - `fv -team -project -assignee -priority title` - Create a new Linear issue
   - Example: `fv Fix authentication bug -p1`
   - Example: `fv -eng -canvas -oac -p1 Fix authentication bug`
-
-## Setup
-
-1. Install the workflow in Alfred
-2. Configure the following environment variables:
-
-### Required Configuration
-- **GitHub Token**: Generate new token (classic) from [GitHub Settings](https://github.com/settings/tokens)
-  - Set as `GITHUB_API_KEY` in workflow configuration
-  - Format: `ghp_...`
-
-- **Linear Token**: Generate an API Key from [Linear Settings](https://linear.app/fastview/settings/account/security/api-keys/new)
-  - Set as `LINEAR_API_KEY` in workflow configuration
-  - Format: `lin_api_...`
-
-- **Vercel Token**: Generata token from [Vercel Settings](https://vercel.com/account/settings/tokens)
-  - Set as `VERCEL_API_KEY` in workflow configuration
-  - Format: `2io...`
-
-### Default Variables
-The workflow comes preconfigured with:
-- GitHub Repository: `fastview-ai/sparrow-ml`
-- Linear Team: `fastview`
-- Vercel Project: `fastviewai/sparrow-ml`
-
-## Development
-
-This workflow uses Node.js for script execution. The default Node.js path is configured to use NVM's installation.
 
 ## Author
 
@@ -416,6 +495,13 @@ Created by Omar Chehab (@oac)</string>
 			<real>30</real>
 			<key>ypos</key>
 			<real>330</real>
+		</dict>
+		<key>2070F8C5-B59A-4C15-947E-C003823F77A8</key>
+		<dict>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>540</real>
 		</dict>
 		<key>22299E4C-2DA4-4270-90D0-BC55053DD221</key>
 		<dict>
@@ -459,6 +545,13 @@ Created by Omar Chehab (@oac)</string>
 			<key>ypos</key>
 			<real>120</real>
 		</dict>
+		<key>B4E70927-45E2-40F9-A4F2-FD6516B44DE5</key>
+		<dict>
+			<key>xpos</key>
+			<real>280</real>
+			<key>ypos</key>
+			<real>540</real>
+		</dict>
 		<key>D1E50DD5-B328-432C-93F8-09DC15A8582C</key>
 		<dict>
 			<key>xpos</key>
@@ -496,16 +589,16 @@ Created by Omar Chehab (@oac)</string>
 				<key>default</key>
 				<string></string>
 				<key>placeholder</key>
-				<string>github_pat_</string>
+				<string>ghp_</string>
 				<key>required</key>
 				<true/>
 				<key>trim</key>
 				<true/>
 			</dict>
 			<key>description</key>
-			<string>https://github.com/settings/tokens</string>
+			<string></string>
 			<key>label</key>
-			<string>GitHub Token</string>
+			<string>GitHub Personal Access Token</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -517,16 +610,16 @@ Created by Omar Chehab (@oac)</string>
 				<key>default</key>
 				<string></string>
 				<key>placeholder</key>
-				<string></string>
+				<string>lin_api_</string>
 				<key>required</key>
-				<false/>
+				<true/>
 				<key>trim</key>
 				<true/>
 			</dict>
 			<key>description</key>
 			<string>https://linear.app/fastview/settings/account/security/api-keys/new</string>
 			<key>label</key>
-			<string>Linear Token</string>
+			<string>Linear API Key</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -540,12 +633,14 @@ Created by Omar Chehab (@oac)</string>
 				<key>placeholder</key>
 				<string></string>
 				<key>required</key>
-				<false/>
+				<true/>
 				<key>trim</key>
 				<true/>
 			</dict>
 			<key>description</key>
-			<string>https://vercel.com/account/settings/tokens</string>
+			<string>Token Name: alfred
+Scope: fastviewai
+Expiration: No Expiration</string>
 			<key>label</key>
 			<string>Vercel Token</string>
 			<key>type</key>
@@ -553,9 +648,35 @@ Created by Omar Chehab (@oac)</string>
 			<key>variable</key>
 			<string>VERCEL_API_KEY</string>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>figd_</string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Set expiry to max.
+Scope: Comments: Read-only</string>
+			<key>label</key>
+			<string>Figma Personal Access Token</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>FIGMA_API_KEY</string>
+		</dict>
 	</array>
 	<key>variables</key>
 	<dict>
+		<key>FIGMA_FILE</key>
+		<string>lOPMkYrHGieCZLRbzLyoZ5</string>
+		<key>FIGMA_TEAM</key>
+		<string>1492523426390454753</string>
 		<key>GITHUB_REPO</key>
 		<string>fastview-ai/sparrow-ml</string>
 		<key>LINEAR_TEAM</key>
@@ -570,7 +691,7 @@ Created by Omar Chehab (@oac)</string>
 		<string>NODE_PATH</string>
 	</array>
 	<key>version</key>
-	<string>2</string>
+	<string>3</string>
 	<key>webaddress</key>
 	<string>https://github.com/fastview-ai/fv-alfred</string>
 </dict>
