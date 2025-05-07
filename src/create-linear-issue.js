@@ -20,22 +20,21 @@ const linearToken = process.env.LINEAR_API_KEY;
 
 // Map priority strings to Linear priority numbers
 const priorities = [
-  { label: "p0", id: 0 },
   { label: "0", id: 0 },
-  { label: "p1", id: 1 },
   { label: "1", id: 1 },
+  { label: "p0", id: 1 },
   { label: "urgent", id: 1 },
   { label: "u", id: 1 },
-  { label: "p2", id: 2 },
   { label: "2", id: 2 },
+  { label: "p1", id: 2 },
   { label: "high", id: 2 },
   { label: "h", id: 2 },
-  { label: "p3", id: 3 },
   { label: "3", id: 3 },
+  { label: "p2", id: 3 },
   { label: "medium", id: 3 },
   { label: "m", id: 3 },
-  { label: "p4", id: 4 },
   { label: "4", id: 4 },
+  { label: "p3", id: 4 },
   { label: "low", id: 4 },
   { label: "l", id: 4 },
 ];
