@@ -193,10 +193,27 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>matchmode</key>
+				<integer>0</integer>
+				<key>matchstring</key>
+				<string></string>
+				<key>replacestring</key>
+				<string></string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.replace</string>
+			<key>uid</key>
+			<string>10F3A5C4-79F4-485D-AFEC-4E1752DB70A9</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>autopaste</key>
 				<true/>
 				<key>clipboardtext</key>
-				<string>{query}</string>
+				<string>	⮑ {query}</string>
 				<key>ignoredynamicplaceholders</key>
 				<false/>
 				<key>transient</key>
@@ -524,6 +541,13 @@ Created by Omar Chehab (@oac)</string>
 			<real>30</real>
 			<key>ypos</key>
 			<real>440</real>
+		</dict>
+		<key>10F3A5C4-79F4-485D-AFEC-4E1752DB70A9</key>
+		<dict>
+			<key>xpos</key>
+			<real>535</real>
+			<key>ypos</key>
+			<real>65</real>
 		</dict>
 		<key>2070F8C5-B59A-4C15-947E-C003823F77A8</key>
 		<dict>
