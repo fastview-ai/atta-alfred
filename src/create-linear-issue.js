@@ -49,6 +49,7 @@ async function createIssue(teamId, projectId, assigneeId, priority, title) {
       title
     );
   }
+
   const doFetch = dryRun ? console.log : fetch;
   const response = await doFetch("https://api.linear.app/graphql", {
     method: "POST",
@@ -255,12 +256,17 @@ async function main() {
     const pastPrefs = readPrefs() || {};
 
     if (teamId == null && projectId == null) {
-      if (pastPrefs.projectsChoice) projectId = pastPrefs.projectsChoice;
-      else teamId = pastPrefs.teamsChoice;
-    } else if (projectId == null) {
       projectId = pastPrefs.projectsChoice;
-    } else if (teamId == null) {
       teamId = pastPrefs.teamsChoice;
+    } else if (projectId == null) {
+      teamId = pastPrefs.teamsChoice;
+    } else if (teamId == null) {
+      const project = metadata.projects.find((p) => p.id === projectId);
+      if (project?.teams?.nodes?.length > 0) {
+        teamId = project.teams.nodes[0].id;
+      } else {
+        teamId = pastPrefs.teamsChoice;
+      }
     }
 
     if (assigneeId == null) {
