@@ -366,7 +366,7 @@
 				<key>autopaste</key>
 				<true/>
 				<key>clipboardtext</key>
-				<string>	⮑ {query}</string>
+				<string>{query}</string>
 				<key>ignoredynamicplaceholders</key>
 				<false/>
 				<key>transient</key>
@@ -1350,7 +1350,7 @@ Created by Omar Chehab (@oac)</string>
 				<key>placeholder</key>
 				<string>ghp_</string>
 				<key>required</key>
-				<true/>
+				<false/>
 				<key>trim</key>
 				<true/>
 			</dict>
@@ -1376,7 +1376,7 @@ You can also do fine grained token, see readme</string>
 				<key>placeholder</key>
 				<string>lin_api_</string>
 				<key>required</key>
-				<true/>
+				<false/>
 				<key>trim</key>
 				<true/>
 			</dict>
@@ -1402,7 +1402,7 @@ Scope
 				<key>placeholder</key>
 				<string></string>
 				<key>required</key>
-				<true/>
+				<false/>
 				<key>trim</key>
 				<true/>
 			</dict>
@@ -1425,7 +1425,7 @@ Scope
 				<key>placeholder</key>
 				<string>figd_</string>
 				<key>required</key>
-				<true/>
+				<false/>
 				<key>trim</key>
 				<true/>
 			</dict>
