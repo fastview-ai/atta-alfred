@@ -10,16 +10,33 @@ An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull re
   - https://github.com/settings/tokens
 
 - **Linear Personal API Key**:
-  - Generate an API Key from **Linear &gt; Settings &gt; Account &gt; Security &amp; Access &gt; Personal API Key**
+  - Generate an API Key from **Linear > Settings > Account > Security & Access > Personal API Key**
   - https://linear.app/fastview/settings/account/security/api-keys/new
 
 - **Vercel Token**:
-  - Generate a token from **Vercel &gt; Settings &gt; Tokens**
+  - Generate a token from **Vercel > Settings > Tokens**
   - https://vercel.com/account/settings/tokens
 
 - **Figma Personal Access Token**:
-  - Generate a personal access token **Figma &gt; Profile / Settings &gt; Security tab &gt; Personal Access Token**
+  - Generate a personal access token **Figma > Profile / Settings > Security tab > Personal Access Token**
   - https://figma.com/
+
+- **Loom Personal Access Token**:
+  - Copy the connect.sid value from Chrome Dev Tools Network tab
+  - https://loom.com/
+
+### GitHub Fine Grained Token (Alternative steps)
+
+(alternatively, but requires permission from admin) Fine grained token
+✅ Token name: Alfred
+✅ Resource owner: fastview-ai
+✅ Expiration: max (1yr)
+
+Only select repositories
+✅ fastview-ai/sparrow-ml
+
+Repository permissions
+✅ Pull requests > Read-only
 
 ### Development
 

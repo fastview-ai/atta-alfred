@@ -132,7 +132,7 @@ async function fetchVercelFilter() {
       }))
       .concat([
         {
-          title: "Deployments",
+          title: "Vercel deployments",
           subtitle: "",
           arg: `https://vercel.com/${vercelProject}/deployments`,
           icon: {
@@ -147,7 +147,7 @@ async function fetchVercelFilter() {
       });
   } catch (error) {
     error.scriptFilterItem = {
-      title: "Deployments",
+      title: "Vercel deployments",
       subtitle: "Configure Workflow with your Vercel API Key",
       arg: "https://vercel.com/account/settings/tokens",
       icon: {

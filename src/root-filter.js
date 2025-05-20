@@ -43,27 +43,50 @@ const linearFilter = withOfflineCache(
   require("./linear-filter"),
   ".linear-cache.json"
 );
+const loomFilter = withOfflineCache(
+  require("./loom-filter"),
+  ".loom-cache.json"
+);
+const figmaFilter = withOfflineCache(
+  require("./figma-filter"),
+  ".figma-cache.json"
+);
 
 async function fetchRootFilter(sourceFilter) {
   try {
     const items = [];
 
-    const [githubResult, linearResult, vercelResult] = await Promise.all([
-      vercelFilter().catch((error) => {
-        console.error(error);
-        return [error.scriptFilterItem];
-      }),
-      githubFilter().catch((error) => {
-        console.error(error);
-        return [error.scriptFilterItem];
-      }),
-      linearFilter().catch((error) => {
-        console.error(error);
-        return [error.scriptFilterItem];
-      }),
-    ]);
+    const [githubResult, linearResult, vercelResult, loomResult, figmaResult] =
+      await Promise.all([
+        vercelFilter().catch((error) => {
+          console.error(error);
+          return [error.scriptFilterItem];
+        }),
+        githubFilter().catch((error) => {
+          console.error(error);
+          return [error.scriptFilterItem];
+        }),
+        linearFilter().catch((error) => {
+          console.error(error);
+          return [error.scriptFilterItem];
+        }),
+        loomFilter().catch((error) => {
+          console.error(error);
+          return [error.scriptFilterItem];
+        }),
+        figmaFilter().catch((error) => {
+          console.error(error);
+          return [error.scriptFilterItem];
+        }),
+      ]);
 
-    items.push(...vercelResult, ...githubResult, ...linearResult);
+    items.push(
+      ...vercelResult,
+      ...githubResult,
+      ...linearResult,
+      ...loomResult,
+      ...figmaResult
+    );
 
     return items
       .filter((item) => sourceFilter == null || item.source === sourceFilter)

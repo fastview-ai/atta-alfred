@@ -86,6 +86,7 @@ async function createIssue(teamId, projectId, assigneeId, priority, title) {
   });
 
   if (!response?.ok) {
+    console.error(response);
     throw new Error("Fetch Error: " + (response.statusText ?? "unknown"));
   }
 

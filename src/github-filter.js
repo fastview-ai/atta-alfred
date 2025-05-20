@@ -88,7 +88,7 @@ async function fetchGithubFilter() {
       }))
       .concat([
         {
-          title: "Pull requests",
+          title: "GitHub pull requests",
           subtitle: "",
           arg: `https://github.com/${githubRepo}/pulls`,
           icon: {
@@ -104,7 +104,7 @@ async function fetchGithubFilter() {
       });
   } catch (error) {
     error.scriptFilterItem = {
-      title: "Pull requests",
+      title: "GitHub pull requests",
       subtitle: "Configure Workflow with your GitHub API Key",
       arg: "https://github.com/settings/tokens",
       icon: {

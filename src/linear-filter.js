@@ -154,7 +154,7 @@ async function fetchLinearFilter() {
       });
   } catch (error) {
     error.scriptFilterItem = {
-      title: "Issues",
+      title: "Linear issues",
       subtitle: "Configure Workflow with your Linear API Key",
       arg: `https://linear.app/${LINEAR_TEAM}/settings/account/security/api-keys/new`,
       icon: {
