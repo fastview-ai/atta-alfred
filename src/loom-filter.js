@@ -31,6 +31,10 @@ function fmtDate(date) {
 
 async function fetchLoomFilter() {
   try {
+    if (!loomConnectSID) {
+      throw new Error("Missing LOOM_CONNECT_SID env var");
+    }
+
     const response = await fetch("https://www.loom.com/graphql", {
       headers: {
         accept: "*/*",
@@ -158,21 +162,24 @@ async function fetchLoomFilter() {
 
 const fetchLoomFilterWithOfflineCache = withOfflineCache(
   fetchLoomFilter,
-  ".loom-cache.json"
+  "loom-filter",
+  ".loom-cache.json",
+  { cachePolicy: process.env.CACHE_POLICY }
 );
 
 module.exports = fetchLoomFilterWithOfflineCache;
 
 if (require.main === module) {
   fetchLoomFilterWithOfflineCache()
-    .then((items) => console.log(JSON.stringify({ items })))
-    .catch(
-      (error) =>
-        console.error(error) ||
-        console.log(
-          JSON.stringify({
-            items: [error.scriptFilterItem],
-          })
-        )
-    );
+    .then((items) => {
+      console.log(JSON.stringify({ items }));
+    })
+    .catch((error) => {
+      console.error(error);
+      console.log(
+        JSON.stringify({
+          items: [error.scriptFilterItem],
+        })
+      );
+    });
 }
