@@ -1,5 +1,11 @@
 const fs = require('fs');
 const { execSync } = require("child_process");
+const offlineCacheWriteAsync = require("./offline-cache-write-async");
+
+const linearToken = process.env.LINEAR_API_KEY;
+if (!linearToken) {
+  throw new Error("LINEAR_API_KEY is not set");
+}
 
 const dryRun = (() => {
   try {
@@ -15,8 +21,6 @@ const dryRun = (() => {
     return false;
   }
 })();
-
-const linearToken = process.env.LINEAR_API_KEY;
 
 // Map priority strings to Linear priority numbers
 const priorities = [
@@ -84,6 +88,8 @@ async function createIssue(teamId, projectId, assigneeId, priority, title) {
       },
     }),
   });
+
+  offlineCacheWriteAsync("linear-filter", ".linear-cache.json");
 
   if (!response?.ok) {
     console.error(response);
@@ -183,7 +189,7 @@ async function main() {
     if (!input) {
       console.error("Missing required input");
       console.log("Please provide an issue title");
-      process.exit(1);
+      return;
     }
 
     const metadata = await getMetadata();
@@ -289,7 +295,7 @@ async function main() {
     title = titleWords.map((word) => word.trim()).join(" ");
     if (!title) {
       console.log("missing title...");
-      process.exit(1);
+      return;
     }
 
     try {
@@ -304,12 +310,12 @@ async function main() {
     } catch (error) {
       console.error(error);
       console.log("Failed to create the issue.");
-      process.exit(1);
+      return;
     }
   } catch (error) {
     console.error(error);
     console.log("An unexpected error occurred.");
-    process.exit(1);
+    return;
   }
 }
 

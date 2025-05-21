@@ -2,3 +2,4 @@
 .linear-prefs.json
 .*-cache.json
 prefs.plist
+*.log

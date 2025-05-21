@@ -61,6 +61,14 @@ const priorityName = {
 
 async function fetchLinearFilter() {
   try {
+    if (!linearToken) {
+      throw new Error("Missing LINEAR_API_KEY env var");
+    }
+
+    if (!linearTeam) {
+      throw new Error("Missing LINEAR_TEAM env var");
+    }
+
     const allIssues = [];
     let hasNextPage = true;
     let endCursor = null;
@@ -172,27 +180,28 @@ async function fetchLinearFilter() {
 
 const fetchLinearFilterWithOfflineCache = withOfflineCache(
   fetchLinearFilter,
-  ".linear-cache.json"
+  "linear-filter",
+  ".linear-cache.json",
+  { cachePolicy: process.env.CACHE_POLICY }
 );
 
 module.exports = fetchLinearFilterWithOfflineCache;
 
 if (require.main === module) {
   fetchLinearFilterWithOfflineCache()
-    .then((items) =>
+    .then((items) => {
       console.log(
         JSON.stringify({
           items,
         })
-      )
-    )
-    .catch(
-      (error) =>
-        console.error(error) ||
-        console.log(
-          JSON.stringify({
-            items: [error.scriptFilterItem],
-          })
-        )
-    );
+      );
+    })
+    .catch((error) => {
+      console.error(error);
+      console.log(
+        JSON.stringify({
+          items: [error.scriptFilterItem],
+        })
+      );
+    });
 }

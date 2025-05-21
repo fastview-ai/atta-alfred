@@ -36,6 +36,14 @@ function getEmoji(resolved) {
 
 async function fetchFigmaFilter() {
   try {
+    if (!figmaToken) {
+      throw new Error("Missing FIGMA_API_KEY env var");
+    }
+
+    if (!figmaFile) {
+      throw new Error("Missing FIGMA_FILE env var");
+    }
+
     let allComments = [];
     let after = null;
 
@@ -111,27 +119,28 @@ async function fetchFigmaFilter() {
 
 const fetchFigmaFilterWithOfflineCache = withOfflineCache(
   fetchFigmaFilter,
-  ".figma-cache.json"
+  "figma-filter",
+  ".figma-cache.json",
+  { cachePolicy: process.env.CACHE_POLICY }
 );
 
 module.exports = fetchFigmaFilterWithOfflineCache;
 
 if (require.main === module) {
   fetchFigmaFilterWithOfflineCache()
-    .then((items) =>
+    .then((items) => {
       console.log(
         JSON.stringify({
           items,
         })
-      )
-    )
-    .catch(
-      (error) =>
-        console.error(error) ||
-        console.log(
-          JSON.stringify({
-            items: [error.scriptFilterItem],
-          })
-        )
-    );
+      );
+    })
+    .catch((error) => {
+      console.error(error);
+      console.log(
+        JSON.stringify({
+          items: [error.scriptFilterItem],
+        })
+      );
+    });
 }

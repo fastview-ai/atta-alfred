@@ -1162,6 +1162,8 @@ Open Loom -&gt; dev tools -&gt; network -&gt; graphql -&gt; cookies -&gt; copy c
 	</array>
 	<key>variables</key>
 	<dict>
+		<key>CACHE_POLICY</key>
+		<string>cache-only</string>
 		<key>DRY_RUN</key>
 		<string>0</string>
 		<key>FIGMA_FILE</key>

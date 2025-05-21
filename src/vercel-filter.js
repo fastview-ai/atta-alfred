@@ -46,6 +46,10 @@ function getEmoji(state) {
 
 async function fetchVercelFilter() {
   try {
+    if (!vercelToken) {
+      throw new Error("Missing VERCEL_API_KEY env var");
+    }
+
     const deployments = [];
     let until = undefined;
     let hasMore = true;
@@ -164,27 +168,28 @@ async function fetchVercelFilter() {
 
 const fetchVercelFilterWithOfflineCache = withOfflineCache(
   fetchVercelFilter,
-  ".vercel-cache.json"
+  "vercel-filter",
+  ".vercel-cache.json",
+  { cachePolicy: process.env.CACHE_POLICY }
 );
 
 module.exports = fetchVercelFilterWithOfflineCache;
 
 if (require.main === module) {
   fetchVercelFilter()
-    .then((items) =>
+    .then((items) => {
       console.log(
         JSON.stringify({
           items,
         })
-      )
-    )
-    .catch(
-      (error) =>
-        console.error(error) ||
-        console.log(
-          JSON.stringify({
-            items: [error.scriptFilterItem],
-          })
-        )
-    );
+      );
+    })
+    .catch((error) => {
+      console.error(error);
+      console.log(
+        JSON.stringify({
+          items: [error.scriptFilterItem],
+        })
+      );
+    });
 }

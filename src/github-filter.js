@@ -44,6 +44,14 @@ function getEmoji(state, mergedAt) {
 
 async function fetchGithubFilter() {
   try {
+    if (!githubToken) {
+      throw new Error("Missing GITHUB_API_KEY env var");
+    }
+
+    if (!githubRepo) {
+      throw new Error("Missing GITHUB_REPO env var");
+    }
+
     const pulls = [];
     let page = 1;
     let hasMore = true;
@@ -122,27 +130,28 @@ async function fetchGithubFilter() {
 
 const fetchGithubFilterWithOfflineCache = withOfflineCache(
   fetchGithubFilter,
-  ".github-cache.json"
+  "github-filter",
+  ".github-cache.json",
+  { cachePolicy: process.env.CACHE_POLICY }
 );
 
 module.exports = fetchGithubFilterWithOfflineCache;
 
 if (require.main === module) {
   fetchGithubFilterWithOfflineCache()
-    .then((items) =>
+    .then((items) => {
       console.log(
         JSON.stringify({
           items,
         })
-      )
-    )
-    .catch(
-      (error) =>
-        console.error(error) ||
-        console.log(
-          JSON.stringify({
-            items: [error.scriptFilterItem],
-          })
-        )
-    );
+      );
+    })
+    .catch((error) => {
+      console.error(error);
+      console.log(
+        JSON.stringify({
+          items: [error.scriptFilterItem],
+        })
+      );
+    });
 }
