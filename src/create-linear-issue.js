@@ -189,9 +189,18 @@ function readPrefs() {
 }
 
 function writePrefs(prefs) {
+  // Add timestamps for each choice
+  const prefsWithTimestamps = {
+    ...prefs,
+    teamsChoiceTimestamp: prefs.teamsChoice ? Date.now() : null,
+    projectsChoiceTimestamp: prefs.projectsChoice ? Date.now() : null,
+    usersChoiceTimestamp: prefs.usersChoice ? Date.now() : null,
+    prioritiesChoiceTimestamp: prefs.prioritiesChoice ? Date.now() : null,
+  };
+
   fs.writeFileSync(
     ".linear-prefs.json",
-    JSON.stringify(prefs, null, dryRun ? 2 : null)
+    JSON.stringify(prefsWithTimestamps, null, dryRun ? 2 : null)
   );
 }
 
@@ -275,26 +284,43 @@ async function main() {
 
     const pastPrefs = readPrefs() || {};
 
+    const EXPIRY_TIME = 30 * 60 * 1000; // 30 minutes in milliseconds
+    const now = Date.now();
+    const isExpired = (timestamp) =>
+      !timestamp || now - timestamp > EXPIRY_TIME;
+
     if (teamId == null && projectId == null) {
-      projectId = pastPrefs.projectsChoice;
-      teamId = pastPrefs.teamsChoice;
+      projectId = isExpired(pastPrefs.projectsChoiceTimestamp)
+        ? null
+        : pastPrefs.projectsChoice;
+      teamId = isExpired(pastPrefs.teamsChoiceTimestamp)
+        ? null
+        : pastPrefs.teamsChoice;
     } else if (projectId == null) {
-      teamId = pastPrefs.teamsChoice;
+      teamId = isExpired(pastPrefs.teamsChoiceTimestamp)
+        ? null
+        : pastPrefs.teamsChoice;
     } else if (teamId == null) {
       const project = metadata.projects.find((p) => p.id === projectId);
       if (project?.teams?.nodes?.length > 0) {
         teamId = project.teams.nodes[0].id;
       } else {
-        teamId = pastPrefs.teamsChoice;
+        teamId = isExpired(pastPrefs.teamsChoiceTimestamp)
+          ? null
+          : pastPrefs.teamsChoice;
       }
     }
 
     if (assigneeId == null) {
-      assigneeId = pastPrefs.usersChoice;
+      assigneeId = isExpired(pastPrefs.usersChoiceTimestamp)
+        ? null
+        : pastPrefs.usersChoice;
     }
 
     if (priorityId == null) {
-      priorityId = pastPrefs.prioritiesChoice;
+      priorityId = isExpired(pastPrefs.prioritiesChoiceTimestamp)
+        ? null
+        : pastPrefs.prioritiesChoice;
     }
 
     writePrefs({
