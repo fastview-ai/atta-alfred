@@ -300,9 +300,7 @@ async function main() {
         priorityId,
         title
       );
-      console.log(
-        `${issue.identifier} assigned to ${issue.assignee.displayName}`
-      );
+      console.log(issue.identifier);
     } catch (error) {
       console.error(error);
       console.log("Failed to create the issue.");

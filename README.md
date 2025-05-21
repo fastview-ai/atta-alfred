@@ -21,8 +21,8 @@ An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull re
   - Generate a personal access token **Figma > Profile / Settings > Security tab > Personal Access Token**
   - https://figma.com/
 
-- **Loom Personal Access Token**:
-  - Copy the connect.sid value from Chrome Dev Tools Network tab
+- [experimental] **Loom Cookie**:
+  - Copy the connect.sid value from Chrome Dev Tools Network tab, unsure what the expiry is on this.
   - https://loom.com/
 
 ### GitHub Fine Grained Token (Alternative steps)
@@ -49,12 +49,16 @@ This workflow uses Node.js for script execution. By default it uses `node` comma
 - `fv` - Searches Linear issues by issue identifier or title
 - `fv` - Searches GitHub pull requests by branch name or title
 - `fv` - Searches Vercel deployments by branch name or title
-- `fv` - Searches Figma comments by comment text
+- `fv` - Searches Figma comments by content
+- `fv` - Searches Loom videos by title
 
 ### Issue Creation
-- `fv -team -project -assignee -priority title` - Create a new Linear issue
+
+- `fv <title> -team -project -assignee -priority` - Create a new Linear issue and posts a system notification with the new ticket number
   - Example: `fv Fix authentication bug -p1`
   - Example: `fv -eng -canvas -oac -p1 Fix authentication bug`
+
+- Enable notifications in MacOS settings and ensure Alfred is allowed during Focus mode
 
 ## Author
 
