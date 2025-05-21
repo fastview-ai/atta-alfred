@@ -294,7 +294,15 @@ async function main() {
 
     title = titleWords.map((word) => word.trim()).join(" ");
     if (!title) {
-      console.log("missing title...");
+      console.log("Please provide a title");
+      return;
+    }
+
+    // Check if title is only one word
+    if (title.trim().split(/\s+/).length === 1) {
+      console.log(
+        "Please provide a more descriptive title with multiple words"
+      );
       return;
     }
 
