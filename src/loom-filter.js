@@ -1,3 +1,5 @@
+const withOfflineCache = require("./offline-cache");
+
 const loomConnectSID = process.env.LOOM_CONNECT_SID;
 
 function fmtDate(date) {
@@ -154,10 +156,15 @@ async function fetchLoomFilter() {
   }
 }
 
-module.exports = fetchLoomFilter;
+const fetchLoomFilterWithOfflineCache = withOfflineCache(
+  fetchLoomFilter,
+  ".loom-cache.json"
+);
+
+module.exports = fetchLoomFilterWithOfflineCache;
 
 if (require.main === module) {
-  fetchLoomFilter()
+  fetchLoomFilterWithOfflineCache()
     .then((items) => console.log(JSON.stringify({ items })))
     .catch(
       (error) =>

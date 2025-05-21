@@ -1,3 +1,5 @@
+const withOfflineCache = require("./offline-cache");
+
 const githubToken = process.env.GITHUB_API_KEY;
 const githubRepo = process.env.GITHUB_REPO;
 
@@ -118,10 +120,15 @@ async function fetchGithubFilter() {
   }
 }
 
-module.exports = fetchGithubFilter;
+const fetchGithubFilterWithOfflineCache = withOfflineCache(
+  fetchGithubFilter,
+  ".github-cache.json"
+);
+
+module.exports = fetchGithubFilterWithOfflineCache;
 
 if (require.main === module) {
-  fetchGithubFilter()
+  fetchGithubFilterWithOfflineCache()
     .then((items) =>
       console.log(
         JSON.stringify({
