@@ -49,7 +49,7 @@ async function createIssue(teamId, projectId, assigneeId, priority, title) {
       teamId?.slice(0, 4) || null,
       projectId?.slice(0, 4) || null,
       assigneeId?.slice(0, 4) || null,
-      priority,
+      priority || 0,
       title
     );
   }
@@ -93,6 +93,12 @@ async function createIssue(teamId, projectId, assigneeId, priority, title) {
 
   if (!response?.ok) {
     console.error(response);
+    try {
+      const errorBody = await response.json();
+      console.error("Response body:", JSON.stringify(errorBody, null, 2));
+    } catch (e) {
+      // Response doesn't contain valid JSON
+    }
     throw new Error("Fetch Error: " + (response.statusText ?? "unknown"));
   }
 
@@ -120,6 +126,13 @@ async function getMetadata() {
               id
               key
               name
+              createdAt
+              members {
+                nodes {
+                  id
+                  isMe
+                }
+              }
             }
           }
           projects {
@@ -307,11 +320,14 @@ async function main() {
     }
 
     try {
+      const defaultTeamID = metadata.teams
+        .filter((team) => team.members.nodes.some((member) => member.isMe))
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))[0]?.id;
       const issue = await createIssue(
-        teamId,
-        projectId,
-        assigneeId,
-        priorityId,
+        teamId || (!projectId && defaultTeamID) || null,
+        projectId || null,
+        assigneeId || null,
+        priorityId || 0,
         title
       );
       console.log(issue.identifier);
