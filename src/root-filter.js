@@ -2,55 +2,11 @@
  * Usage: node src/root-filter.js [gh|li|vc]
  */
 
-const fs = require("fs");
-
-const isOffline = process.env.OFFLINE === "1";
-
-const withOfflineCache = (fn, cacheFile) => {
-  return async (...args) => {
-    try {
-      if (isOffline) {
-        throw new Error("Offline mode");
-      }
-      const result = await fn(...args);
-      try {
-        // Save successful result to cache
-        fs.writeFileSync(cacheFile, JSON.stringify(result));
-      } catch (error) {
-        // ignore
-      }
-      return result;
-    } catch (error) {
-      // If offline/error, try to load from cache
-      if (fs.existsSync(cacheFile)) {
-        const cached = JSON.parse(fs.readFileSync(cacheFile, "utf8"));
-        return cached;
-      }
-      return [];
-    }
-  };
-};
-
-const vercelFilter = withOfflineCache(
-  require("./vercel-filter"),
-  ".vercel-cache.json"
-);
-const githubFilter = withOfflineCache(
-  require("./github-filter"),
-  ".github-cache.json"
-);
-const linearFilter = withOfflineCache(
-  require("./linear-filter"),
-  ".linear-cache.json"
-);
-const loomFilter = withOfflineCache(
-  require("./loom-filter"),
-  ".loom-cache.json"
-);
-const figmaFilter = withOfflineCache(
-  require("./figma-filter"),
-  ".figma-cache.json"
-);
+const vercelFilter = require("./vercel-filter");
+const githubFilter = require("./github-filter");
+const linearFilter = require("./linear-filter");
+const loomFilter = require("./loom-filter");
+const figmaFilter = require("./figma-filter");
 
 async function fetchRootFilter(sourceFilter) {
   try {

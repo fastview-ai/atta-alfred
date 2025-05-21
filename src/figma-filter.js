@@ -1,3 +1,5 @@
+const withOfflineCache = require("./offline-cache");
+
 const figmaToken = process.env.FIGMA_API_KEY;
 const figmaFile = process.env.FIGMA_FILE;
 
@@ -107,10 +109,15 @@ async function fetchFigmaFilter() {
   }
 }
 
-module.exports = fetchFigmaFilter;
+const fetchFigmaFilterWithOfflineCache = withOfflineCache(
+  fetchFigmaFilter,
+  ".figma-cache.json"
+);
+
+module.exports = fetchFigmaFilterWithOfflineCache;
 
 if (require.main === module) {
-  fetchFigmaFilter()
+  fetchFigmaFilterWithOfflineCache()
     .then((items) =>
       console.log(
         JSON.stringify({

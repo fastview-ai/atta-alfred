@@ -1,3 +1,5 @@
+const withOfflineCache = require("./offline-cache");
+
 const linearToken = process.env.LINEAR_API_KEY;
 const linearTeam = process.env.LINEAR_TEAM;
 
@@ -168,10 +170,15 @@ async function fetchLinearFilter() {
   }
 }
 
-module.exports = fetchLinearFilter;
+const fetchLinearFilterWithOfflineCache = withOfflineCache(
+  fetchLinearFilter,
+  ".linear-cache.json"
+);
+
+module.exports = fetchLinearFilterWithOfflineCache;
 
 if (require.main === module) {
-  fetchLinearFilter()
+  fetchLinearFilterWithOfflineCache()
     .then((items) =>
       console.log(
         JSON.stringify({

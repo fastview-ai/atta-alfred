@@ -1,3 +1,5 @@
+const withOfflineCache = require("./offline-cache");
+
 const vercelToken = process.env.VERCEL_API_KEY;
 const vercelProject = process.env.VERCEL_PROJECT;
 
@@ -160,7 +162,12 @@ async function fetchVercelFilter() {
   }
 }
 
-module.exports = fetchVercelFilter;
+const fetchVercelFilterWithOfflineCache = withOfflineCache(
+  fetchVercelFilter,
+  ".vercel-cache.json"
+);
+
+module.exports = fetchVercelFilterWithOfflineCache;
 
 if (require.main === module) {
   fetchVercelFilter()
