@@ -8,19 +8,6 @@
 	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
-		<key>0BBD114A-D892-4D9E-8487-A598A7CF2A2A</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>7933360E-A869-4F2E-BF09-D8FC6B297681</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 		<key>2070F8C5-B59A-4C15-947E-C003823F77A8</key>
 		<array>
 			<dict>
@@ -61,6 +48,19 @@
 			<dict>
 				<key>destinationuid</key>
 				<string>374E5A68-1EC5-4C4B-9B68-AAD82E359160</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>278EA840-F934-426B-8273-934ADF4676B9</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>32AC4E08-866E-4724-B41A-AAC8167C415C</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -148,19 +148,6 @@
 				<false/>
 			</dict>
 		</array>
-		<key>67760EE4-1659-41DF-A970-C9663FCD0F74</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>32AC4E08-866E-4724-B41A-AAC8167C415C</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 		<key>750FF686-C353-454C-AF61-9B0564FE7BFB</key>
 		<array>
 			<dict>
@@ -180,19 +167,6 @@
 				<integer>1048576</integer>
 				<key>modifiersubtext</key>
 				<string>Copy to clipboard</string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
-		<key>7933360E-A869-4F2E-BF09-D8FC6B297681</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>67760EE4-1659-41DF-A970-C9663FCD0F74</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
 				<key>vitoclose</key>
 				<false/>
 			</dict>
@@ -342,25 +316,52 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>concurrently</key>
+				<key>alfredfiltersresults</key>
 				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
 				<key>escaping</key>
 				<integer>102</integer>
+				<key>keyword</key>
+				<string>fv</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string></string>
 				<key>script</key>
-				<string>${NODE_PATH:-node} ./src/create-linear-issue-prefs.js</string>
+				<string>${NODE_PATH:-node} ./src/create-linear-issue-filter.js "$1"
+</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
 				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string>Create Linear issue</string>
 				<key>type</key>
 				<integer>11</integer>
+				<key>withspace</key>
+				<true/>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.action.script</string>
+			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
-			<string>0BBD114A-D892-4D9E-8487-A598A7CF2A2A</string>
+			<string>278EA840-F934-426B-8273-934ADF4676B9</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -384,27 +385,6 @@
 			<string>32AC4E08-866E-4724-B41A-AAC8167C415C</string>
 			<key>version</key>
 			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>0</integer>
-				<key>keyword</key>
-				<string>fv</string>
-				<key>subtext</key>
-				<string>Usage: &lt;title&gt; {var:hint}</string>
-				<key>text</key>
-				<string>🛠️ Create linear issue: {query}</string>
-				<key>withspace</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>67760EE4-1659-41DF-A970-C9663FCD0F74</string>
-			<key>version</key>
-			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -435,27 +415,6 @@
 			<string>alfred.workflow.utility.conditional</string>
 			<key>uid</key>
 			<string>26CD270C-55DD-42F2-B9A7-C07BC43D627C</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argument</key>
-				<string>{query}
-</string>
-				<key>passthroughargument</key>
-				<true/>
-				<key>variables</key>
-				<dict>
-					<key>hint</key>
-					<string>{query}</string>
-				</dict>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.utility.argument</string>
-			<key>uid</key>
-			<string>7933360E-A869-4F2E-BF09-D8FC6B297681</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -1047,13 +1006,6 @@ This workflow uses Node.js for script execution. By default it uses `node` comma
 Created by Omar Chehab (@oac)</string>
 	<key>uidata</key>
 	<dict>
-		<key>0BBD114A-D892-4D9E-8487-A598A7CF2A2A</key>
-		<dict>
-			<key>xpos</key>
-			<real>530</real>
-			<key>ypos</key>
-			<real>70</real>
-		</dict>
 		<key>1453A3A0-AD3B-4E97-A168-2141311F9230</key>
 		<dict>
 			<key>xpos</key>
@@ -1081,6 +1033,13 @@ Created by Omar Chehab (@oac)</string>
 			<real>1205</real>
 			<key>ypos</key>
 			<real>90</real>
+		</dict>
+		<key>278EA840-F934-426B-8273-934ADF4676B9</key>
+		<dict>
+			<key>xpos</key>
+			<real>770</real>
+			<key>ypos</key>
+			<real>70</real>
 		</dict>
 		<key>32AC4E08-866E-4724-B41A-AAC8167C415C</key>
 		<dict>
@@ -1131,26 +1090,12 @@ Created by Omar Chehab (@oac)</string>
 			<key>ypos</key>
 			<real>1065</real>
 		</dict>
-		<key>67760EE4-1659-41DF-A970-C9663FCD0F74</key>
-		<dict>
-			<key>xpos</key>
-			<real>775</real>
-			<key>ypos</key>
-			<real>70</real>
-		</dict>
 		<key>750FF686-C353-454C-AF61-9B0564FE7BFB</key>
 		<dict>
 			<key>xpos</key>
 			<real>30</real>
 			<key>ypos</key>
 			<real>645</real>
-		</dict>
-		<key>7933360E-A869-4F2E-BF09-D8FC6B297681</key>
-		<dict>
-			<key>xpos</key>
-			<real>690</real>
-			<key>ypos</key>
-			<real>100</real>
 		</dict>
 		<key>7AD63019-0181-49E6-AF5F-FF94BCEC2E84</key>
 		<dict>
