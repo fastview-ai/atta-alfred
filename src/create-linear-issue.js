@@ -2,6 +2,7 @@ const { execSync } = require("child_process");
 const offlineCacheWriteAsync = require("./offline-cache-write-async");
 const utils = require("./create-linear-issue-utils");
 
+
 const linearToken = process.env.LINEAR_API_KEY;
 if (!linearToken) {
   throw new Error("LINEAR_API_KEY is not set");
@@ -100,31 +101,16 @@ async function main() {
       return;
     }
 
-    // Use the shared getMetadata function instead of the local one
-    const metadata = await utils.getMetadata(linearToken);
-    if (metadata.error) {
-      console.error(metadata.error);
+    // Use the unified workflow processing
+    const workflow = await utils.processWorkflow(input, linearToken);
+    if (workflow.error) {
+      console.error(workflow.error);
       return;
     }
 
-    // Parse input using shared function
-    const { paramWords, titleWords } = utils.parseInput(input);
-
-    // Process parameters using shared logic
-    const params = utils.processParameters(paramWords, metadata);
-
-    // Load past preferences
-    const pastPrefs = utils.readPrefs() || {};
-
-    // Apply default preferences using shared logic - this includes expired timestamp checks
-    const finalParams = utils.applyDefaultPreferences(params, pastPrefs);
-
-    // Add any unmatched parameters back to the title words
-    titleWords.unshift(...params.unmatched);
-    const title = titleWords.map((word) => word.trim()).join(" ");
+    const { metadata, params: finalParams, title, titleValidation } = workflow;
 
     // Validate the title
-    const titleValidation = utils.validateTitle(title);
     if (!titleValidation.valid) {
       console.log(titleValidation.message);
       return;
@@ -143,12 +129,8 @@ async function main() {
     );
 
     try {
-      const defaultTeamID = metadata.teams
-        .filter((team) => team.members.nodes.some((member) => member.isMe))
-        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))[0]?.id;
-
       const issue = await createIssue(
-        finalParams.teamId || (!finalParams.projectId && defaultTeamID) || null,
+        finalParams.teamId || null,
         finalParams.projectId || null,
         finalParams.assigneeId || null,
         finalParams.priorityId || 0,

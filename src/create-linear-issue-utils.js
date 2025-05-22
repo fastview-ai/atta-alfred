@@ -56,10 +56,12 @@ const matchers = {
 function readPrefs() {
   let savedPrefs = null;
   try {
-    // If cache doesn't exist or couldn't be parsed, try linear-prefs.json
+    // If cache doesn't exist or couldn't be parsed, try create-linear-issue-cache.json
     if (!savedPrefs) {
       try {
-        savedPrefs = JSON.parse(fs.readFileSync(".linear-prefs.json"));
+        savedPrefs = JSON.parse(
+          fs.readFileSync(".create-linear-issue-cache.json")
+        );
       } catch (e) {
         // Ignore file not found errors
       }
@@ -166,7 +168,7 @@ function writePrefs(prefs, isDryRun = false) {
   };
 
   fs.writeFileSync(
-    ".linear-prefs.json",
+    ".create-linear-issue-cache.json",
     JSON.stringify(prefsWithTimestamps, null, isDryRun ? 2 : null)
   );
 
@@ -176,8 +178,12 @@ function writePrefs(prefs, isDryRun = false) {
 // Parse input into parameters and title
 function parseInput(input) {
   const inputWords = input.split(" ");
-  const paramWords = inputWords.filter((word) => word.startsWith("-"));
-  const titleWords = inputWords.filter((word) => !word.startsWith("-"));
+  const paramWords = inputWords.filter(
+    (word) => word.startsWith("-") && word.length > 1
+  );
+  const titleWords = inputWords.filter(
+    (word) => !word.startsWith("-") || word.length === 1
+  );
 
   return { paramWords, titleWords };
 }
@@ -216,8 +222,11 @@ function processParameters(paramWords, metadata) {
     },
   };
 
-  // Process parameters in the same order as create-linear-issue.js
-  for (const [key, matcher] of Object.entries(matchers)) {
+  // Process parameters with priority parsing before projects
+  const processingOrder = ["priorities", "users", "teams", "projects"];
+
+  for (const key of processingOrder) {
+    const matcher = matchers[key];
     // Process each word in reverse order (as in create-linear-issue.js)
     for (let i = results.unmatched.length - 1; i >= 0; i--) {
       const word = results.unmatched[i];
@@ -249,6 +258,11 @@ function applyDefaultPreferences(params, metadata) {
   const isExpired = (timestamp) => !timestamp || now - timestamp > EXPIRY_TIME;
   const results = { ...params }; // Clone to avoid modifying original
 
+  // Calculate default team ID (user's oldest team)
+  const defaultTeamID = metadata.teams
+    ?.filter((team) => team.members.nodes.some((member) => member.isMe))
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))[0]?.id;
+
   // Handle team/project fallbacks identical to create-linear-issue.js
   if (results.teamId == null && results.projectId == null) {
     results.projectId = isExpired(metadata.projectsChoiceTimestamp)
@@ -270,6 +284,11 @@ function applyDefaultPreferences(params, metadata) {
         ? null
         : metadata.teamsChoice;
     }
+  }
+
+  // Apply default team if no team/project is specified and no preferences exist
+  if (!results.teamId && !results.projectId && defaultTeamID) {
+    results.teamId = defaultTeamID;
   }
 
   if (results.assigneeId == null) {
@@ -311,6 +330,59 @@ function applyDefaultPreferences(params, metadata) {
   return results;
 }
 
+// Unified metadata handling function
+async function getUnifiedMetadata(linearToken) {
+  // Try to read from cache first
+  let metadata = readPrefs();
+
+  // If no cached metadata or it's incomplete, fetch fresh data
+  if (
+    !metadata ||
+    !metadata.teams?.length ||
+    !metadata.projects?.length ||
+    !metadata.users?.length
+  ) {
+    metadata = await getMetadata(linearToken);
+    writePrefs(metadata);
+  }
+
+  return metadata;
+}
+
+// Process complete workflow from input to final parameters
+async function processWorkflow(input, linearToken) {
+  // Parse input
+  const { paramWords, titleWords } = parseInput(input);
+
+  // Get unified metadata
+  const metadata = await getUnifiedMetadata(linearToken);
+
+  if (metadata.error) {
+    return { error: metadata.error };
+  }
+
+  // Process parameters
+  const params = processParameters(paramWords, metadata);
+
+  // Apply default preferences
+  const finalParams = applyDefaultPreferences(params, metadata);
+
+  // Prepare title
+  titleWords.unshift(...params.unmatched);
+  const title = titleWords.map((word) => word.trim()).join(" ");
+
+  // Validate title
+  const titleValidation = validateTitle(title);
+
+  return {
+    metadata,
+    params: finalParams,
+    title,
+    titleValidation,
+    input,
+  };
+}
+
 // Validate title (has content and multiple words)
 function validateTitle(title) {
   if (!title) {
@@ -337,4 +409,6 @@ module.exports = {
   processParameters,
   applyDefaultPreferences,
   validateTitle,
+  getUnifiedMetadata,
+  processWorkflow,
 };
