@@ -15,42 +15,46 @@ function getEmoji(resolved) {
   return resolved ? "✅" : "💬";
 }
 
+async function fetchAllComments() {
+  if (!figmaToken) {
+    throw new Error("Missing FIGMA_API_KEY env var");
+  }
+
+  if (!figmaFile) {
+    throw new Error("Missing FIGMA_FILE env var");
+  }
+
+  let allComments = [];
+  let after = null;
+
+  do {
+    const url = new URL(`https://api.figma.com/v1/files/${figmaFile}/comments`);
+    if (after) {
+      url.searchParams.append("after", after);
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        "X-Figma-Token": figmaToken,
+      },
+    });
+
+    if (!response.ok) {
+      console.error(response);
+      throw new Error("Figma API request failed");
+    }
+
+    const data = await response.json();
+    allComments = allComments.concat(data.comments);
+    after = data.pagination?.after;
+  } while (after);
+
+  return allComments;
+}
+
 async function fetchFigmaFilter() {
   try {
-    if (!figmaToken) {
-      throw new Error("Missing FIGMA_API_KEY env var");
-    }
-
-    if (!figmaFile) {
-      throw new Error("Missing FIGMA_FILE env var");
-    }
-
-    let allComments = [];
-    let after = null;
-
-    do {
-      const url = new URL(
-        `https://api.figma.com/v1/files/${figmaFile}/comments`
-      );
-      if (after) {
-        url.searchParams.append("after", after);
-      }
-
-      const response = await fetch(url, {
-        headers: {
-          "X-Figma-Token": figmaToken,
-        },
-      });
-
-      if (!response.ok) {
-        console.error(response);
-        throw new Error("Figma API request failed");
-      }
-
-      const data = await response.json();
-      allComments = allComments.concat(data.comments);
-      after = data.pagination?.after;
-    } while (after);
+    const allComments = await fetchAllComments();
 
     const commentItems = allComments
       .filter((comment) => comment.client_meta?.node_id != null)

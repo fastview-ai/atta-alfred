@@ -10,12 +10,15 @@ const {
 
 const loomConnectSID = process.env.LOOM_CONNECT_SID;
 
-async function fetchLoomFilter() {
-  try {
-    if (!loomConnectSID) {
-      throw new Error("Missing LOOM_CONNECT_SID env var");
-    }
+async function fetchAllVideos() {
+  if (!loomConnectSID) {
+    throw new Error("Missing LOOM_CONNECT_SID env var");
+  }
+  const allVideos = [];
+  let hasNextPage = true;
+  let cursor = null;
 
+  while (hasNextPage) {
     const response = await fetch("https://www.loom.com/graphql", {
       headers: {
         accept: "*/*",
@@ -43,8 +46,8 @@ async function fetchLoomFilter() {
           sortType: "RECENT",
           sortOrder: "DESC",
           filters: [],
-          limit: 12,
-          cursor: null,
+          limit: 99,
+          cursor: cursor,
           folderId: null,
           timeRange: null,
         },
@@ -93,12 +96,28 @@ async function fetchLoomFilter() {
     });
 
     if (!response.ok) {
-      console.error(response);
       throw new Error("Loom API request failed");
     }
 
     const data = await response.json();
-    const videos = data.data.getLooms.videos.edges;
+    const videos = data.data?.getLooms?.videos;
+
+    if (!videos?.edges) {
+      throw new Error("Invalid response format from Loom API");
+    }
+
+    allVideos.push(...videos.edges);
+
+    hasNextPage = videos.pageInfo.hasNextPage;
+    cursor = videos.pageInfo.endCursor;
+  }
+
+  return allVideos;
+}
+
+async function fetchLoomFilter() {
+  try {
+    const videos = await fetchAllVideos();
 
     const videoItems = videos.map(({ node }) =>
       createFilterItem({

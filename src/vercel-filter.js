@@ -26,39 +26,45 @@ function getEmoji(state) {
   }
 }
 
+async function fetchAllDeployments() {
+  if (!vercelToken) {
+    throw new Error("Missing VERCEL_API_KEY env var");
+  }
+
+  const deployments = [];
+  let until = undefined;
+  let hasMore = true;
+
+  while (hasMore) {
+    const url = new URL("https://api.vercel.com/v6/deployments");
+    if (until) {
+      url.searchParams.set("until", until);
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${vercelToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      console.error(response);
+      throw new Error("Vercel API request failed");
+    }
+
+    const data = await response.json();
+    deployments.push(...data.deployments);
+
+    hasMore = data.pagination?.next;
+    until = data.pagination?.next;
+  }
+
+  return deployments;
+}
+
 async function fetchVercelFilter() {
   try {
-    if (!vercelToken) {
-      throw new Error("Missing VERCEL_API_KEY env var");
-    }
-
-    const deployments = [];
-    let until = undefined;
-    let hasMore = true;
-
-    while (hasMore) {
-      const url = new URL("https://api.vercel.com/v6/deployments");
-      if (until) {
-        url.searchParams.set("until", until);
-      }
-
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${vercelToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        console.error(response);
-        throw new Error("Vercel API request failed");
-      }
-
-      const data = await response.json();
-      deployments.push(...data.deployments);
-
-      hasMore = data.pagination?.next;
-      until = data.pagination?.next;
-    }
+    const deployments = await fetchAllDeployments();
 
     const deploymentItems = deployments
       .sort((a, b) => {

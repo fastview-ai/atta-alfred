@@ -41,64 +41,70 @@ const priorityName = {
   4: "3️⃣",
 };
 
-async function fetchLinearFilter() {
-  try {
-    if (!linearToken) {
-      throw new Error("Missing LINEAR_API_KEY env var");
-    }
+async function fetchAllIssues() {
+  if (!linearToken) {
+    throw new Error("Missing LINEAR_API_KEY env var");
+  }
 
-    if (!linearTeam) {
-      throw new Error("Missing LINEAR_TEAM env var");
-    }
+  if (!linearTeam) {
+    throw new Error("Missing LINEAR_TEAM env var");
+  }
 
-    const allIssues = [];
-    let hasNextPage = true;
-    let endCursor = null;
+  const allIssues = [];
+  let hasNextPage = true;
+  let endCursor = null;
 
-    while (hasNextPage) {
-      const response = await fetch("https://api.linear.app/graphql", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: linearToken,
-        },
-        body: JSON.stringify({
-          query: `
-            query($after: String) {
-              issues(first: 100, after: $after) {
-                nodes {
-                  title
-                  identifier 
-                  state { name }
-                  updatedAt
-                  assignee { name }
-                  url
-                  priority
-                }
-                pageInfo {
-                  hasNextPage
-                  endCursor
-                }
+  while (hasNextPage) {
+    const response = await fetch("https://api.linear.app/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: linearToken,
+      },
+      body: JSON.stringify({
+        query: `
+          query($after: String) {
+            issues(first: 100, after: $after) {
+              nodes {
+                title
+                identifier 
+                state { name }
+                updatedAt
+                assignee { name }
+                url
+                priority
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
               }
             }
-          `,
-          variables: {
-            after: endCursor,
-          },
-        }),
-      });
+          }
+        `,
+        variables: {
+          after: endCursor,
+        },
+      }),
+    });
 
-      if (!response.ok) {
-        console.error(response);
-        throw new Error("Linear API request failed");
-      }
-
-      const { data } = await response.json();
-      allIssues.push(...data.issues.nodes);
-
-      hasNextPage = data.issues.pageInfo.hasNextPage;
-      endCursor = data.issues.pageInfo.endCursor;
+    if (!response.ok) {
+      console.error(response);
+      throw new Error("Linear API request failed");
     }
+
+    const { data } = await response.json();
+    allIssues.push(...data.issues.nodes);
+
+    hasNextPage = data.issues.pageInfo.hasNextPage;
+    endCursor = data.issues.pageInfo.endCursor;
+  }
+
+  return allIssues;
+}
+
+async function fetchLinearFilter() {
+  try {
+    const allIssues = await fetchAllIssues();
 
     const issueItems = allIssues.map((issue) =>
       createFilterItem({
