@@ -1,4 +1,4 @@
-const utils = require("./create-linear-issue-utils");
+const utils = require("./create-linear-issue-logic");
 
 const linearToken = process.env.LINEAR_API_KEY;
 

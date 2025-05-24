@@ -1,34 +1,16 @@
-const withOfflineCache = require("./offline-cache");
+const withFilterCache = require("./filter-cache");
+const {
+  formatSubtitle,
+  createFilterItem,
+  createErrorItem,
+  createNavigationItem,
+  wrapFilterResults,
+  getEmojiOrFallback,
+  executeFilterModule,
+} = require("./filter-logic");
 
 const githubToken = process.env.GITHUB_API_KEY;
 const githubRepo = process.env.GITHUB_REPO;
-
-function fmtDate(date) {
-  const now = new Date();
-  const inputDate = new Date(date);
-  const diffTime = now - inputDate;
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    return "Today";
-  } else if (diffDays === 1) {
-    return "Yesterday";
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
-  } else if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30);
-    return `${months} ${months === 1 ? "month" : "months"} ago`;
-  } else {
-    return inputDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-}
 
 function getEmoji(state, mergedAt) {
   switch (state) {
@@ -38,7 +20,7 @@ function getEmoji(state, mergedAt) {
       if (mergedAt) return "🟢";
       else return "🔴";
     default:
-      return process.env.NODE_ENV === "production" ? "❓" : state;
+      return getEmojiOrFallback(null, state);
   }
 }
 
@@ -80,78 +62,48 @@ async function fetchGithubFilter() {
       page++;
     }
 
-    return pulls
-      .map((pr) => ({
+    const pullItems = pulls.map((pr) =>
+      createFilterItem({
         title: [getEmoji(pr.state, pr.merged_at), pr.head.ref, pr.title]
           .filter(Boolean)
           .join(" "),
-        subtitle: ["\t⮑", pr.user.login, "•", fmtDate(pr.updated_at)]
-          .filter(Boolean)
-          .join(" "),
+        subtitle: formatSubtitle(pr.user.login, pr.updated_at),
         arg: pr._links.html.href,
-        icon: {
-          path: "./src/github.png",
-        },
-
+        iconPath: "./src/icons/github.png",
         source: "gh",
         date: new Date(pr.updated_at),
-      }))
-      .concat([
-        {
-          title: "GitHub pull requests",
-          subtitle: "",
-          arg: `https://github.com/${githubRepo}/pulls`,
-          icon: {
-            path: "./src/github.png",
-          },
+      })
+    );
 
-          source: "gh",
-          date: new Date(0),
-        },
-      ])
-      .sort((a, b) => {
-        return new Date(b.date) - new Date(a.date);
-      });
+    const navigationItem = createNavigationItem({
+      title: "GitHub pull requests",
+      arg: `https://github.com/${githubRepo}/pulls`,
+      iconPath: "./src/icons/github.png",
+      source: "gh",
+    });
+
+    return wrapFilterResults(pullItems, navigationItem);
   } catch (error) {
-    error.scriptFilterItem = {
+    error.scriptFilterItem = createErrorItem({
       title: "GitHub pull requests",
       subtitle: "Configure Workflow with your GitHub API Key",
       arg: "https://github.com/settings/tokens",
-      icon: {
-        path: "./src/github.png",
-      },
-
+      iconPath: "./src/icons/github.png",
       source: "gh",
-      date: new Date(0),
-    };
+    });
     throw error;
   }
 }
 
-const fetchGithubFilterWithOfflineCache = withOfflineCache(
+const fetchGithubFilterWithCache = withFilterCache(
   fetchGithubFilter,
   "github-filter",
-  ".github-cache.json",
+  "github-cache.json",
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-module.exports = fetchGithubFilterWithOfflineCache;
+module.exports = fetchGithubFilterWithCache;
 
 if (require.main === module) {
-  fetchGithubFilterWithOfflineCache()
-    .then((items) => {
-      console.log(
-        JSON.stringify({
-          items,
-        })
-      );
-    })
-    .catch((error) => {
-      console.error(error);
-      console.log(
-        JSON.stringify({
-          items: [error.scriptFilterItem],
-        })
-      );
-    });
+  executeFilterModule(fetchGithubFilterWithCache);
 }

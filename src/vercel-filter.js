@@ -1,34 +1,16 @@
-const withOfflineCache = require("./offline-cache");
+const withFilterCache = require("./filter-cache");
+const {
+  formatSubtitle,
+  createFilterItem,
+  createErrorItem,
+  createNavigationItem,
+  wrapFilterResults,
+  getEmojiOrFallback,
+  executeFilterModule,
+} = require("./filter-logic");
 
 const vercelToken = process.env.VERCEL_API_KEY;
 const vercelProject = process.env.VERCEL_PROJECT;
-
-function fmtDate(date) {
-  const now = new Date();
-  const inputDate = new Date(date);
-  const diffTime = now - inputDate;
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    return "Today";
-  } else if (diffDays === 1) {
-    return "Yesterday";
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
-  } else if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30);
-    return `${months} ${months === 1 ? "month" : "months"} ago`;
-  } else {
-    return inputDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-}
 
 function getEmoji(state) {
   switch (state) {
@@ -40,7 +22,7 @@ function getEmoji(state) {
     case "CANCELED":
       return "❌";
     default:
-      return process.env.NODE_ENV === "production" ? "❓" : state;
+      return getEmojiOrFallback(null, state);
   }
 }
 
@@ -78,7 +60,7 @@ async function fetchVercelFilter() {
       until = data.pagination?.next;
     }
 
-    return deployments
+    const deploymentItems = deployments
       .sort((a, b) => {
         // Sort by githubCommitRef first
         const refA = a.meta?.githubCommitRef || "";
@@ -112,84 +94,55 @@ async function fetchVercelFilter() {
           prev.readyState !== deployment.readyState
         );
       })
-
-      .map((deployment) => ({
-        title: [
-          getEmoji(deployment.readyState),
-          deployment.meta?.githubCommitRef,
-          deployment.meta?.githubCommitMessage,
-        ]
-          .filter(Boolean)
-          .join(" "),
-        subtitle: [
-          "\t⮑",
-          deployment.creator?.username || "Unknown",
-          "•",
-          fmtDate(deployment.createdAt),
-        ]
-          .filter(Boolean)
-          .join(" "),
-        arg: `https://${deployment.url}`,
-        icon: {
-          path: "./src/vercel.png",
-        },
-        source: "vc",
-        date: new Date(deployment.createdAt),
-      }))
-      .concat([
-        {
-          title: "Vercel deployments",
-          subtitle: "",
-          arg: `https://vercel.com/${vercelProject}/deployments`,
-          icon: {
-            path: "./src/vercel.png",
-          },
+      .map((deployment) =>
+        createFilterItem({
+          title: [
+            getEmoji(deployment.readyState),
+            deployment.meta?.githubCommitRef,
+            deployment.meta?.githubCommitMessage,
+          ]
+            .filter(Boolean)
+            .join(" "),
+          subtitle: formatSubtitle(
+            deployment.creator?.username || "Unknown",
+            deployment.createdAt
+          ),
+          arg: `https://${deployment.url}`,
+          iconPath: "./src/icons/vercel.png",
           source: "vc",
-          date: new Date(0),
-        },
-      ])
-      .sort((a, b) => {
-        return new Date(b.date) - new Date(a.date);
-      });
+          date: new Date(deployment.createdAt),
+        })
+      );
+
+    const navigationItem = createNavigationItem({
+      title: "Vercel deployments",
+      arg: `https://vercel.com/${vercelProject}/deployments`,
+      iconPath: "./src/icons/vercel.png",
+      source: "vc",
+    });
+
+    return wrapFilterResults(deploymentItems, navigationItem);
   } catch (error) {
-    error.scriptFilterItem = {
+    error.scriptFilterItem = createErrorItem({
       title: "Vercel deployments",
       subtitle: "Configure Workflow with your Vercel API Key",
       arg: "https://vercel.com/account/settings/tokens",
-      icon: {
-        path: "./src/vercel.png",
-      },
+      iconPath: "./src/icons/vercel.png",
       source: "vc",
-      date: new Date(0),
-    };
+    });
     throw error;
   }
 }
 
-const fetchVercelFilterWithOfflineCache = withOfflineCache(
+const fetchVercelFilterWithCache = withFilterCache(
   fetchVercelFilter,
   "vercel-filter",
-  ".vercel-cache.json",
+  "vercel-cache.json",
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-module.exports = fetchVercelFilterWithOfflineCache;
+module.exports = fetchVercelFilterWithCache;
 
 if (require.main === module) {
-  fetchVercelFilter()
-    .then((items) => {
-      console.log(
-        JSON.stringify({
-          items,
-        })
-      );
-    })
-    .catch((error) => {
-      console.error(error);
-      console.log(
-        JSON.stringify({
-          items: [error.scriptFilterItem],
-        })
-      );
-    });
+  executeFilterModule(fetchVercelFilterWithCache);
 }

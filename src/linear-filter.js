@@ -1,34 +1,16 @@
-const withOfflineCache = require("./offline-cache");
+const withFilterCache = require("./filter-cache");
+const {
+  formatSubtitle,
+  createFilterItem,
+  createErrorItem,
+  createNavigationItem,
+  wrapFilterResults,
+  getEmojiOrFallback,
+  executeFilterModule,
+} = require("./filter-logic");
 
 const linearToken = process.env.LINEAR_API_KEY;
 const linearTeam = process.env.LINEAR_TEAM;
-
-function fmtDate(date) {
-  const now = new Date();
-  const inputDate = new Date(date);
-  const diffTime = now - inputDate;
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    return "Today";
-  } else if (diffDays === 1) {
-    return "Yesterday";
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
-  } else if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30);
-    return `${months} ${months === 1 ? "month" : "months"} ago`;
-  } else {
-    return inputDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-}
 
 function getEmoji(state) {
   switch (state) {
@@ -47,7 +29,7 @@ function getEmoji(state) {
     case "duplicate":
       return "🔴";
     default:
-      return process.env.NODE_ENV === "production" ? "❓" : state;
+      return getEmojiOrFallback(null, state);
   }
 }
 
@@ -118,8 +100,8 @@ async function fetchLinearFilter() {
       endCursor = data.issues.pageInfo.endCursor;
     }
 
-    return allIssues
-      .map((issue) => ({
+    const issueItems = allIssues.map((issue) =>
+      createFilterItem({
         title: [
           getEmoji(issue.state.name.toLowerCase()),
           issue.identifier,
@@ -128,80 +110,46 @@ async function fetchLinearFilter() {
         ]
           .filter(Boolean)
           .join(" "),
-        subtitle: [
-          "\t⮑",
-          issue.assignee
-            ? issue.assignee.name
-            : issue.creator?.name || "Unassigned",
-          "•",
-          fmtDate(issue.updatedAt),
-        ]
-          .filter(Boolean)
-          .join(" "),
+        subtitle: formatSubtitle(
+          issue.assignee?.name || "Unassigned",
+          issue.updatedAt
+        ),
         arg: issue.url,
-        icon: {
-          path: "./src/linear.png",
-        },
-
+        iconPath: "./src/icons/linear.png",
         source: "li",
         date: new Date(issue.updatedAt),
-      }))
-      .concat([
-        {
-          title: "Issues",
-          subtitle: "",
-          arg: `https://linear.app/${linearTeam}`,
-          icon: {
-            path: "./src/linear.png",
-          },
+      })
+    );
 
-          source: "li",
-          date: new Date(0),
-        },
-      ])
-      .sort((a, b) => {
-        return new Date(b.date) - new Date(a.date);
-      });
+    const navigationItem = createNavigationItem({
+      title: "Issues",
+      arg: `https://linear.app/${linearTeam}`,
+      iconPath: "./src/icons/linear.png",
+      source: "li",
+    });
+
+    return wrapFilterResults(issueItems, navigationItem);
   } catch (error) {
-    error.scriptFilterItem = {
+    error.scriptFilterItem = createErrorItem({
       title: "Linear issues",
       subtitle: "Configure Workflow with your Linear API Key",
-      arg: `https://linear.app/${LINEAR_TEAM}/settings/account/security/api-keys/new`,
-      icon: {
-        path: "./src/linear.png",
-      },
-
+      arg: `https://linear.app/${linearTeam}/settings/account/security/api-keys/new`,
+      iconPath: "./src/icons/linear.png",
       source: "li",
-      date: new Date(0),
-    };
+    });
     throw error;
   }
 }
 
-const fetchLinearFilterWithOfflineCache = withOfflineCache(
+const fetchLinearFilterWithCache = withFilterCache(
   fetchLinearFilter,
   "linear-filter",
-  ".linear-cache.json",
+  "linear-cache.json",
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-module.exports = fetchLinearFilterWithOfflineCache;
+module.exports = fetchLinearFilterWithCache;
 
 if (require.main === module) {
-  fetchLinearFilterWithOfflineCache()
-    .then((items) => {
-      console.log(
-        JSON.stringify({
-          items,
-        })
-      );
-    })
-    .catch((error) => {
-      console.error(error);
-      console.log(
-        JSON.stringify({
-          items: [error.scriptFilterItem],
-        })
-      );
-    });
+  executeFilterModule(fetchLinearFilterWithCache);
 }
