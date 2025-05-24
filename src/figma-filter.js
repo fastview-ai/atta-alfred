@@ -64,6 +64,7 @@ async function fetchFigmaFilter() {
           iconPath: "./src/icons/figma.png",
           source: "fg",
           date: new Date(comment.created_at),
+          uid: `figma-comment-${comment.id}`,
         })
       );
 
@@ -72,6 +73,7 @@ async function fetchFigmaFilter() {
       arg: `https://www.figma.com/file/${figmaFile}`,
       iconPath: "./src/icons/figma.png",
       source: "fg",
+      uid: "figma-navigation",
     });
 
     return wrapFilterResults(commentItems, navigationItem);
@@ -82,6 +84,7 @@ async function fetchFigmaFilter() {
       arg: "https://www.figma.com/",
       iconPath: "./src/icons/figma.png",
       source: "fg",
+      uid: "figma-error",
     });
     throw error;
   }

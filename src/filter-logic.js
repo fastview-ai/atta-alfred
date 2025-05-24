@@ -51,6 +51,7 @@ function createFilterItem({
   iconPath,
   source,
   date = new Date(),
+  uid,
 }) {
   return {
     title,
@@ -61,21 +62,21 @@ function createFilterItem({
     },
     source,
     date,
+    uid,
   };
 }
 
 // Common error item creation
-function createErrorItem({ title, subtitle, arg, iconPath, source }) {
-  return {
+function createErrorItem({ title, subtitle, arg, iconPath, source, uid }) {
+  return createFilterItem({
     title,
     subtitle,
     arg,
-    icon: {
-      path: iconPath,
-    },
+    iconPath,
     source,
     date: new Date(0),
-  };
+    uid,
+  });
 }
 
 // Common main module execution pattern - this function should be called from the main module
@@ -99,7 +100,14 @@ function executeFilterModule(filterWithCache, errorItem) {
 }
 
 // Helper to create fallback/navigation items
-function createNavigationItem({ title, subtitle = "", arg, iconPath, source }) {
+function createNavigationItem({
+  title,
+  subtitle = "",
+  arg,
+  iconPath,
+  source,
+  uid,
+}) {
   return createFilterItem({
     title,
     subtitle,
@@ -107,6 +115,7 @@ function createNavigationItem({ title, subtitle = "", arg, iconPath, source }) {
     iconPath,
     source,
     date: new Date(0), // Use epoch for navigation items to sort them last
+    uid,
   });
 }
 

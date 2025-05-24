@@ -167,13 +167,25 @@ async function getMetadata(linearToken) {
 
 // Write preferences to file
 function writePrefs(prefs, isDryRun = false) {
-  // Add timestamps for each choice
+  // Add timestamps for each choice and preserve the choice values
   const prefsWithTimestamps = {
     ...prefs,
-    teamsChoiceTimestamp: prefs.teamsChoice ? Date.now() : null,
-    projectsChoiceTimestamp: prefs.projectsChoice ? Date.now() : null,
-    usersChoiceTimestamp: prefs.usersChoice ? Date.now() : null,
-    prioritiesChoiceTimestamp: prefs.prioritiesChoice ? Date.now() : null,
+    teamsChoice: prefs.teamsChoice || null,
+    projectsChoice: prefs.projectsChoice || null,
+    usersChoice: prefs.usersChoice || null,
+    prioritiesChoice: prefs.prioritiesChoice || null,
+    teamsChoiceTimestamp: prefs.teamsChoice
+      ? Date.now()
+      : prefs.teamsChoiceTimestamp || null,
+    projectsChoiceTimestamp: prefs.projectsChoice
+      ? Date.now()
+      : prefs.projectsChoiceTimestamp || null,
+    usersChoiceTimestamp: prefs.usersChoice
+      ? Date.now()
+      : prefs.usersChoiceTimestamp || null,
+    prioritiesChoiceTimestamp: prefs.prioritiesChoice
+      ? Date.now()
+      : prefs.prioritiesChoiceTimestamp || null,
   };
 
   // Ensure user-data directory exists
@@ -384,9 +396,9 @@ async function processWorkflow(input, linearToken) {
   // Process parameters
   const params = processParameters(paramWords, metadata);
 
-  // Track which parameters were explicitly set by the user
+  // Track which parameters were explicitly set by the user (from their input, not defaults)
   const explicitChoices = {
-    teamId: params.teamId,
+    teamId: params.teamId, // Only non-null if user explicitly specified it
     projectId: params.projectId,
     assigneeId: params.assigneeId,
     priorityId: params.priorityId,

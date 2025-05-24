@@ -111,6 +111,7 @@ async function fetchVercelFilter() {
           iconPath: "./src/icons/vercel.png",
           source: "vc",
           date: new Date(deployment.createdAt),
+          uid: `vercel-deployment-${deployment.uid}`,
         })
       );
 
@@ -119,6 +120,7 @@ async function fetchVercelFilter() {
       arg: `https://vercel.com/${vercelProject}/deployments`,
       iconPath: "./src/icons/vercel.png",
       source: "vc",
+      uid: "vercel-navigation",
     });
 
     return wrapFilterResults(deploymentItems, navigationItem);
@@ -129,6 +131,7 @@ async function fetchVercelFilter() {
       arg: "https://vercel.com/account/settings/tokens",
       iconPath: "./src/icons/vercel.png",
       source: "vc",
+      uid: "vercel-error",
     });
     throw error;
   }
