@@ -72,6 +72,7 @@ async function fetchGithubFilter() {
         iconPath: "./src/icons/github.png",
         source: "gh",
         date: new Date(pr.updated_at),
+        uid: `github-pr-${pr.number}`,
       })
     );
 
@@ -80,6 +81,7 @@ async function fetchGithubFilter() {
       arg: `https://github.com/${githubRepo}/pulls`,
       iconPath: "./src/icons/github.png",
       source: "gh",
+      uid: "github-navigation",
     });
 
     return wrapFilterResults(pullItems, navigationItem);
@@ -90,6 +92,7 @@ async function fetchGithubFilter() {
       arg: "https://github.com/settings/tokens",
       iconPath: "./src/icons/github.png",
       source: "gh",
+      uid: "github-error",
     });
     throw error;
   }

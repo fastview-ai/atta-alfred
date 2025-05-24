@@ -108,6 +108,7 @@ async function fetchLoomFilter() {
         iconPath: "./src/icons/loom.png",
         source: "lm",
         date: new Date(node.createdAt),
+        uid: `loom-video-${node.id}`,
       })
     );
 
@@ -116,6 +117,7 @@ async function fetchLoomFilter() {
       arg: "https://www.loom.com/looms/videos",
       iconPath: "./src/icons/loom.png",
       source: "lm",
+      uid: "loom-navigation",
     });
 
     return wrapFilterResults(videoItems, navigationItem);
@@ -126,6 +128,7 @@ async function fetchLoomFilter() {
       arg: "https://www.loom.com/looms/videos",
       iconPath: "./src/icons/loom.png",
       source: "lm",
+      uid: "loom-error",
     });
     throw error;
   }

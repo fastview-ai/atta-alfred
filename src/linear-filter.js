@@ -118,6 +118,7 @@ async function fetchLinearFilter() {
         iconPath: "./src/icons/linear.png",
         source: "li",
         date: new Date(issue.updatedAt),
+        uid: `linear-issue-${issue.identifier}`,
       })
     );
 
@@ -126,6 +127,7 @@ async function fetchLinearFilter() {
       arg: `https://linear.app/${linearTeam}`,
       iconPath: "./src/icons/linear.png",
       source: "li",
+      uid: "linear-navigation",
     });
 
     return wrapFilterResults(issueItems, navigationItem);
@@ -136,6 +138,7 @@ async function fetchLinearFilter() {
       arg: `https://linear.app/${linearTeam}/settings/account/security/api-keys/new`,
       iconPath: "./src/icons/linear.png",
       source: "li",
+      uid: "linear-error",
     });
     throw error;
   }

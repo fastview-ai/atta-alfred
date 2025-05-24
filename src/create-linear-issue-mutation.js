@@ -128,13 +128,26 @@ async function main() {
     }
 
     // Write updated preferences using shared function - only save explicit choices
+    const existingPrefs = utils.readPrefs();
     utils.writePrefs(
       {
         ...metadata,
-        teamsChoice: explicitChoices.teamId,
-        projectsChoice: explicitChoices.projectId,
-        usersChoice: explicitChoices.assigneeId,
-        prioritiesChoice: explicitChoices.priorityId,
+        // Preserve existing choices if not explicitly set by user
+        teamsChoice:
+          explicitChoices.teamId || existingPrefs.teamsChoice || null,
+        projectsChoice:
+          explicitChoices.projectId || existingPrefs.projectsChoice || null,
+        usersChoice:
+          explicitChoices.assigneeId || existingPrefs.usersChoice || null,
+        prioritiesChoice:
+          explicitChoices.priorityId !== null
+            ? explicitChoices.priorityId
+            : existingPrefs.prioritiesChoice || null,
+        // Preserve existing timestamps if choice hasn't changed
+        teamsChoiceTimestamp: existingPrefs.teamsChoiceTimestamp,
+        projectsChoiceTimestamp: existingPrefs.projectsChoiceTimestamp,
+        usersChoiceTimestamp: existingPrefs.usersChoiceTimestamp,
+        prioritiesChoiceTimestamp: existingPrefs.prioritiesChoiceTimestamp,
       },
       dryRun
     );

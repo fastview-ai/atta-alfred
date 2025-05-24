@@ -44,9 +44,9 @@ async function fetchRootFilter(sourceFilter) {
       icon: {
         path: "./src/icons/fastview.png",
       },
-
       source: "root",
       date: new Date(),
+      uid: "root-error",
     };
     throw error;
   }
