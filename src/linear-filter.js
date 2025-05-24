@@ -123,7 +123,7 @@ async function fetchLinearFilter() {
     );
 
     const navigationItem = createNavigationItem({
-      title: "Issues",
+      title: "Linear issues",
       arg: `https://linear.app/${linearTeam}`,
       iconPath: "./src/icons/linear.png",
       source: "li",
