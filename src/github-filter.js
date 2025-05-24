@@ -24,43 +24,49 @@ function getEmoji(state, mergedAt) {
   }
 }
 
+async function fetchAllPulls() {
+  if (!githubToken) {
+    throw new Error("Missing GITHUB_API_KEY env var");
+  }
+
+  if (!githubRepo) {
+    throw new Error("Missing GITHUB_REPO env var");
+  }
+
+  const pulls = [];
+  let page = 1;
+  let hasMore = true;
+
+  while (hasMore) {
+    const response = await fetch(
+      `https://api.github.com/repos/${githubRepo}/pulls?state=all&per_page=100&page=${page}`,
+      {
+        headers: {
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${githubToken}`,
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.error(response);
+      throw new Error("GitHub API request failed");
+    }
+
+    const pageData = await response.json();
+    pulls.push(...pageData);
+
+    hasMore = pageData.length === 100;
+    page++;
+  }
+
+  return pulls;
+}
+
 async function fetchGithubFilter() {
   try {
-    if (!githubToken) {
-      throw new Error("Missing GITHUB_API_KEY env var");
-    }
-
-    if (!githubRepo) {
-      throw new Error("Missing GITHUB_REPO env var");
-    }
-
-    const pulls = [];
-    let page = 1;
-    let hasMore = true;
-
-    while (hasMore) {
-      const response = await fetch(
-        `https://api.github.com/repos/${githubRepo}/pulls?state=all&per_page=100&page=${page}`,
-        {
-          headers: {
-            Accept: "application/vnd.github+json",
-            Authorization: `Bearer ${githubToken}`,
-            "X-GitHub-Api-Version": "2022-11-28",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        console.error(response);
-        throw new Error("GitHub API request failed");
-      }
-
-      const pageData = await response.json();
-      pulls.push(...pageData);
-
-      hasMore = pageData.length === 100;
-      page++;
-    }
+    const pulls = await fetchAllPulls();
 
     const pullItems = pulls.map((pr) =>
       createFilterItem({
