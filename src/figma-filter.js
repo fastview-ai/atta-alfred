@@ -1,34 +1,15 @@
-const withOfflineCache = require("./offline-cache");
+const withFilterCache = require("./filter-cache");
+const {
+  formatSubtitle,
+  createFilterItem,
+  createErrorItem,
+  createNavigationItem,
+  wrapFilterResults,
+  executeFilterModule,
+} = require("./filter-logic");
 
 const figmaToken = process.env.FIGMA_API_KEY;
 const figmaFile = process.env.FIGMA_FILE;
-
-function fmtDate(date) {
-  const now = new Date();
-  const inputDate = new Date(date);
-  const diffTime = now - inputDate;
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    return "Today";
-  } else if (diffDays === 1) {
-    return "Yesterday";
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
-  } else if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30);
-    return `${months} ${months === 1 ? "month" : "months"} ago`;
-  } else {
-    return inputDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-}
 
 function getEmoji(resolved) {
   return resolved ? "✅" : "💬";
@@ -71,76 +52,50 @@ async function fetchFigmaFilter() {
       after = data.pagination?.after;
     } while (after);
 
-    return allComments
+    const commentItems = allComments
       .filter((comment) => comment.client_meta?.node_id != null)
-      .map((comment) => ({
-        title: [getEmoji(comment.resolved_at != null), comment.message]
-          .filter(Boolean)
-          .join(" "),
-        subtitle: ["\t⮑", comment.user.handle, "•", fmtDate(comment.created_at)]
-          .filter(Boolean)
-          .join(" "),
-        arg: `https://www.figma.com/file/${figmaFile}?node-id=${comment.client_meta?.node_id}`,
-        icon: {
-          path: "./src/figma.png",
-        },
-        source: "fg",
-        date: new Date(comment.created_at),
-      }))
-      .concat([
-        {
-          title: "Figma comments",
-          subtitle: "",
-          arg: `https://www.figma.com/file/${figmaFile}`,
-          icon: {
-            path: "./src/figma.png",
-          },
+      .map((comment) =>
+        createFilterItem({
+          title: [getEmoji(comment.resolved_at != null), comment.message]
+            .filter(Boolean)
+            .join(" "),
+          subtitle: formatSubtitle(comment.user.handle, comment.created_at),
+          arg: `https://www.figma.com/file/${figmaFile}?node-id=${comment.client_meta?.node_id}`,
+          iconPath: "./src/icons/figma.png",
           source: "fg",
-          date: new Date(0),
-        },
-      ])
-      .sort((a, b) => {
-        return new Date(b.date) - new Date(a.date);
-      });
+          date: new Date(comment.created_at),
+        })
+      );
+
+    const navigationItem = createNavigationItem({
+      title: "Figma comments",
+      arg: `https://www.figma.com/file/${figmaFile}`,
+      iconPath: "./src/icons/figma.png",
+      source: "fg",
+    });
+
+    return wrapFilterResults(commentItems, navigationItem);
   } catch (error) {
-    error.scriptFilterItem = {
+    error.scriptFilterItem = createErrorItem({
       title: "Figma comments",
       subtitle: "Configure Workflow with your Figma Personal AccessToken",
       arg: "https://www.figma.com/",
-      icon: {
-        path: "./src/figma.png",
-      },
+      iconPath: "./src/icons/figma.png",
       source: "fg",
-      date: new Date(0),
-    };
+    });
     throw error;
   }
 }
 
-const fetchFigmaFilterWithOfflineCache = withOfflineCache(
+const fetchFigmaFilterWithCache = withFilterCache(
   fetchFigmaFilter,
   "figma-filter",
-  ".figma-cache.json",
+  "figma-cache.json",
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-module.exports = fetchFigmaFilterWithOfflineCache;
+module.exports = fetchFigmaFilterWithCache;
 
 if (require.main === module) {
-  fetchFigmaFilterWithOfflineCache()
-    .then((items) => {
-      console.log(
-        JSON.stringify({
-          items,
-        })
-      );
-    })
-    .catch((error) => {
-      console.error(error);
-      console.log(
-        JSON.stringify({
-          items: [error.scriptFilterItem],
-        })
-      );
-    });
+  executeFilterModule(fetchFigmaFilterWithCache);
 }

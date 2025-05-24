@@ -1,4 +1,5 @@
 const fs = require("fs");
+const createLinearIssueCacheAsync = require("./create-linear-issue-cache-async");
 
 // Map priority strings to Linear priority numbers - shared across both files
 const priorities = [
@@ -56,12 +57,20 @@ const matchers = {
 function readPrefs() {
   let savedPrefs = null;
   try {
-    // If cache doesn't exist or couldn't be parsed, try create-linear-issue-cache.json
+    // Ensure user-data directory exists
+    const userDataDir = require("path").join(process.cwd(), "user-data");
+    if (!fs.existsSync(userDataDir)) {
+      fs.mkdirSync(userDataDir, { recursive: true });
+    }
+
+    // Try to read from create-linear-issue-cache.json in user-data directory
     if (!savedPrefs) {
       try {
-        savedPrefs = JSON.parse(
-          fs.readFileSync(".create-linear-issue-cache.json")
+        const cacheFilePath = require("path").join(
+          userDataDir,
+          "create-linear-issue-cache.json"
         );
+        savedPrefs = JSON.parse(fs.readFileSync(cacheFilePath));
       } catch (e) {
         // Ignore file not found errors
       }
@@ -167,8 +176,18 @@ function writePrefs(prefs, isDryRun = false) {
     prioritiesChoiceTimestamp: prefs.prioritiesChoice ? Date.now() : null,
   };
 
+  // Ensure user-data directory exists
+  const userDataDir = require("path").join(process.cwd(), "user-data");
+  if (!fs.existsSync(userDataDir)) {
+    fs.mkdirSync(userDataDir, { recursive: true });
+  }
+
+  const cacheFilePath = require("path").join(
+    userDataDir,
+    "create-linear-issue-cache.json"
+  );
   fs.writeFileSync(
-    ".create-linear-issue-cache.json",
+    cacheFilePath,
     JSON.stringify(prefsWithTimestamps, null, isDryRun ? 2 : null)
   );
 
@@ -227,7 +246,7 @@ function processParameters(paramWords, metadata) {
 
   for (const key of processingOrder) {
     const matcher = matchers[key];
-    // Process each word in reverse order (as in create-linear-issue.js)
+    // Process each word in reverse order (as in create-linear-issue-mutation.js)
     for (let i = results.unmatched.length - 1; i >= 0; i--) {
       const word = results.unmatched[i];
 
@@ -263,7 +282,7 @@ function applyDefaultPreferences(params, metadata) {
     ?.filter((team) => team.members.nodes.some((member) => member.isMe))
     .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))[0]?.id;
 
-  // Handle team/project fallbacks identical to create-linear-issue.js
+  // Handle team/project fallbacks - only apply defaults if nothing was explicitly set
   if (results.teamId == null && results.projectId == null) {
     results.projectId = isExpired(metadata.projectsChoiceTimestamp)
       ? null
@@ -271,11 +290,8 @@ function applyDefaultPreferences(params, metadata) {
     results.teamId = isExpired(metadata.teamsChoiceTimestamp)
       ? null
       : metadata.teamsChoice;
-  } else if (results.projectId == null) {
-    results.teamId = isExpired(metadata.teamsChoiceTimestamp)
-      ? null
-      : metadata.teamsChoice;
-  } else if (results.teamId == null) {
+  } else if (results.teamId == null && results.projectId != null) {
+    // If project is set but team is not, try to get team from project
     const project = metadata.projects?.find((p) => p.id === results.projectId);
     if (project?.teams?.nodes?.length > 0) {
       results.teamId = project.teams.nodes[0].id;
@@ -285,6 +301,7 @@ function applyDefaultPreferences(params, metadata) {
         : metadata.teamsChoice;
     }
   }
+  // Note: If teamId is already set (explicitly specified), we don't override it
 
   // Apply default team if no team/project is specified and no preferences exist
   if (!results.teamId && !results.projectId && defaultTeamID) {
@@ -344,6 +361,9 @@ async function getUnifiedMetadata(linearToken) {
   ) {
     metadata = await getMetadata(linearToken);
     writePrefs(metadata);
+  } else {
+    // Cache exists but trigger async refresh in background for filter responsiveness
+    createLinearIssueCacheAsync(linearToken);
   }
 
   return metadata;
@@ -364,6 +384,14 @@ async function processWorkflow(input, linearToken) {
   // Process parameters
   const params = processParameters(paramWords, metadata);
 
+  // Track which parameters were explicitly set by the user
+  const explicitChoices = {
+    teamId: params.teamId,
+    projectId: params.projectId,
+    assigneeId: params.assigneeId,
+    priorityId: params.priorityId,
+  };
+
   // Apply default preferences
   const finalParams = applyDefaultPreferences(params, metadata);
 
@@ -377,6 +405,7 @@ async function processWorkflow(input, linearToken) {
   return {
     metadata,
     params: finalParams,
+    explicitChoices, // Track what the user explicitly chose
     title,
     titleValidation,
     input,
@@ -411,4 +440,5 @@ module.exports = {
   validateTitle,
   getUnifiedMetadata,
   processWorkflow,
+  createLinearIssueCacheAsync,
 };

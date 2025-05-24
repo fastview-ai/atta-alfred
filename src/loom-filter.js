@@ -1,33 +1,14 @@
-const withOfflineCache = require("./offline-cache");
+const withFilterCache = require("./filter-cache");
+const {
+  formatSubtitle,
+  createFilterItem,
+  createErrorItem,
+  createNavigationItem,
+  wrapFilterResults,
+  executeFilterModule,
+} = require("./filter-logic");
 
 const loomConnectSID = process.env.LOOM_CONNECT_SID;
-
-function fmtDate(date) {
-  const now = new Date();
-  const inputDate = new Date(date);
-  const diffTime = now - inputDate;
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    return "Today";
-  } else if (diffDays === 1) {
-    return "Yesterday";
-  } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
-  } else if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
-  } else if (diffDays < 365) {
-    const months = Math.floor(diffDays / 30);
-    return `${months} ${months === 1 ? "month" : "months"} ago`;
-  } else {
-    return inputDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-}
 
 async function fetchLoomFilter() {
   try {
@@ -119,67 +100,46 @@ async function fetchLoomFilter() {
     const data = await response.json();
     const videos = data.data.getLooms.videos.edges;
 
-    return videos
-      .map(({ node }) => ({
+    const videoItems = videos.map(({ node }) =>
+      createFilterItem({
         title: `🎥 ${node.name}`,
-        subtitle: ["\t⮑", node.owner.display_name, "•", fmtDate(node.createdAt)]
-          .filter(Boolean)
-          .join(" "),
+        subtitle: formatSubtitle(node.owner.display_name, node.createdAt),
         arg: `https://www.loom.com/share/${node.id}`,
-        icon: {
-          path: "./src/loom.png",
-        },
+        iconPath: "./src/icons/loom.png",
         source: "lm",
         date: new Date(node.createdAt),
-      }))
-      .concat([
-        {
-          title: "Loom videos",
-          subtitle: "",
-          arg: "https://www.loom.com/looms/videos",
-          icon: {
-            path: "./src/loom.png",
-          },
-          source: "lm",
-          date: new Date(0),
-        },
-      ])
-      .sort((a, b) => b.date - a.date);
+      })
+    );
+
+    const navigationItem = createNavigationItem({
+      title: "Loom videos",
+      arg: "https://www.loom.com/looms/videos",
+      iconPath: "./src/icons/loom.png",
+      source: "lm",
+    });
+
+    return wrapFilterResults(videoItems, navigationItem);
   } catch (error) {
-    error.scriptFilterItem = {
+    error.scriptFilterItem = createErrorItem({
       title: "Loom videos",
       subtitle: "Configure Workflow with your Loom browser session cookie",
       arg: "https://www.loom.com/looms/videos",
-      icon: {
-        path: "./src/loom.png",
-      },
+      iconPath: "./src/icons/loom.png",
       source: "lm",
-      date: new Date(0),
-    };
+    });
     throw error;
   }
 }
 
-const fetchLoomFilterWithOfflineCache = withOfflineCache(
+const fetchLoomFilterWithCache = withFilterCache(
   fetchLoomFilter,
   "loom-filter",
-  ".loom-cache.json",
+  "loom-cache.json",
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-module.exports = fetchLoomFilterWithOfflineCache;
+module.exports = fetchLoomFilterWithCache;
 
 if (require.main === module) {
-  fetchLoomFilterWithOfflineCache()
-    .then((items) => {
-      console.log(JSON.stringify({ items }));
-    })
-    .catch((error) => {
-      console.error(error);
-      console.log(
-        JSON.stringify({
-          items: [error.scriptFilterItem],
-        })
-      );
-    });
+  executeFilterModule(fetchLoomFilterWithCache);
 }

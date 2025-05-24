@@ -371,7 +371,7 @@
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>script</key>
-				<string>${NODE_PATH:-node} ./src/create-linear-issue.js "$1"</string>
+				<string>${NODE_PATH:-node} ./src/create-linear-issue-mutation.js "$1"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>

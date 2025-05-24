@@ -1,7 +1,6 @@
 const { execSync } = require("child_process");
-const offlineCacheWriteAsync = require("./offline-cache-write-async");
-const utils = require("./create-linear-issue-utils");
-
+const { filterCacheAsync } = require("./filter-cache-async");
+const utils = require("./create-linear-issue-logic");
 
 const linearToken = process.env.LINEAR_API_KEY;
 if (!linearToken) {
@@ -14,7 +13,7 @@ const dryRun = (() => {
     const gitStatus = execSync("git status --porcelain").toString();
     return gitStatus
       .split("\n")
-      .some((line) => line.trim().endsWith("create-linear-issue.js"));
+      .some((line) => line.trim().endsWith("create-linear-issue-mutation.js"));
   } catch (e) {
     if (e.code === "ENOENT" || e.code === "ENOTDIR") {
       return true;
@@ -23,7 +22,13 @@ const dryRun = (() => {
   }
 })();
 
-async function createIssue(teamId, projectId, assigneeId, priority, title) {
+async function createIssueMutation(
+  teamId,
+  projectId,
+  assigneeId,
+  priority,
+  title
+) {
   if (dryRun) {
     console.log(
       teamId?.slice(0, 4) || null,
@@ -69,7 +74,7 @@ async function createIssue(teamId, projectId, assigneeId, priority, title) {
     }),
   });
 
-  offlineCacheWriteAsync("linear-filter", ".linear-cache.json");
+  filterCacheAsync("linear-filter", "linear-cache.json");
 
   if (!response?.ok) {
     console.error(response);
@@ -108,7 +113,13 @@ async function main() {
       return;
     }
 
-    const { metadata, params: finalParams, title, titleValidation } = workflow;
+    const {
+      metadata,
+      params: finalParams,
+      explicitChoices,
+      title,
+      titleValidation,
+    } = workflow;
 
     // Validate the title
     if (!titleValidation.valid) {
@@ -116,20 +127,20 @@ async function main() {
       return;
     }
 
-    // Write updated preferences using shared function
+    // Write updated preferences using shared function - only save explicit choices
     utils.writePrefs(
       {
         ...metadata,
-        teamsChoice: finalParams.teamId,
-        projectsChoice: finalParams.projectId,
-        usersChoice: finalParams.assigneeId,
-        prioritiesChoice: finalParams.priorityId,
+        teamsChoice: explicitChoices.teamId,
+        projectsChoice: explicitChoices.projectId,
+        usersChoice: explicitChoices.assigneeId,
+        prioritiesChoice: explicitChoices.priorityId,
       },
       dryRun
     );
 
     try {
-      const issue = await createIssue(
+      const issue = await createIssueMutation(
         finalParams.teamId || null,
         finalParams.projectId || null,
         finalParams.assigneeId || null,

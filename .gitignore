@@ -1,4 +1,7 @@
 .DS_Store
-.*-cache.json
+user-data
+*-cache.json
 prefs.plist
+logs
 *.log
+.github

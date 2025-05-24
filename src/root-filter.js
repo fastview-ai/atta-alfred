@@ -42,7 +42,7 @@ async function fetchRootFilter(sourceFilter) {
       title: "Unknown error",
       subtitle: error.message,
       icon: {
-        path: "./src/fastview.png",
+        path: "./src/icons/fastview.png",
       },
 
       source: "root",
