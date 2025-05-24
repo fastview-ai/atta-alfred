@@ -1,4 +1,4 @@
-const withFilterCache = require("./filter-cache");
+const withFilterCache = require("./filter-cache-async").withFilterCache;
 const {
   formatSubtitle,
   createFilterItem,
@@ -102,9 +102,16 @@ async function fetchAllIssues() {
   return allIssues;
 }
 
+const fetchAllIssuesWithCache = withFilterCache(
+  fetchAllIssues,
+  "linear-filter",
+  "linear-cache.json",
+  { cachePolicy: process.env.CACHE_POLICY }
+);
+
 async function fetchLinearFilter() {
   try {
-    const allIssues = await fetchAllIssues();
+    const allIssues = await fetchAllIssuesWithCache();
 
     const issueItems = allIssues.map((issue) =>
       createFilterItem({
@@ -150,15 +157,9 @@ async function fetchLinearFilter() {
   }
 }
 
-const fetchLinearFilterWithCache = withFilterCache(
-  fetchLinearFilter,
-  "linear-filter",
-  "linear-cache.json",
-  { cachePolicy: process.env.CACHE_POLICY }
-);
-
-module.exports = fetchLinearFilterWithCache;
+module.exports = fetchLinearFilter;
+module.exports.fetchAllData = fetchAllIssues;
 
 if (require.main === module) {
-  executeFilterModule(fetchLinearFilterWithCache);
+  executeFilterModule(fetchLinearFilter);
 }
