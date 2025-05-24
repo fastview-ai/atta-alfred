@@ -1,4 +1,4 @@
-const withFilterCache = require("./filter-cache");
+const withFilterCache = require("./filter-cache-async").withFilterCache;
 const {
   formatSubtitle,
   createFilterItem,
@@ -52,9 +52,16 @@ async function fetchAllComments() {
   return allComments;
 }
 
+const fetchAllCommentsWithCache = withFilterCache(
+  fetchAllComments,
+  "figma-filter",
+  "figma-cache.json",
+  { cachePolicy: process.env.CACHE_POLICY }
+);
+
 async function fetchFigmaFilter() {
   try {
-    const allComments = await fetchAllComments();
+    const allComments = await fetchAllCommentsWithCache();
 
     const commentItems = allComments
       .filter((comment) => comment.client_meta?.node_id != null)
@@ -94,15 +101,9 @@ async function fetchFigmaFilter() {
   }
 }
 
-const fetchFigmaFilterWithCache = withFilterCache(
-  fetchFigmaFilter,
-  "figma-filter",
-  "figma-cache.json",
-  { cachePolicy: process.env.CACHE_POLICY }
-);
-
-module.exports = fetchFigmaFilterWithCache;
+module.exports = fetchFigmaFilter;
+module.exports.fetchAllData = fetchAllComments;
 
 if (require.main === module) {
-  executeFilterModule(fetchFigmaFilterWithCache);
+  executeFilterModule(fetchFigmaFilter);
 }

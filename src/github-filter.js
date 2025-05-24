@@ -1,4 +1,4 @@
-const withFilterCache = require("./filter-cache");
+const withFilterCache = require("./filter-cache-async").withFilterCache;
 const {
   formatSubtitle,
   createFilterItem,
@@ -64,9 +64,16 @@ async function fetchAllPulls() {
   return pulls;
 }
 
+const fetchAllPullsWithCache = withFilterCache(
+  fetchAllPulls,
+  "github-filter",
+  "github-cache.json",
+  { cachePolicy: process.env.CACHE_POLICY }
+);
+
 async function fetchGithubFilter() {
   try {
-    const pulls = await fetchAllPulls();
+    const pulls = await fetchAllPullsWithCache();
 
     const pullItems = pulls.map((pr) =>
       createFilterItem({
@@ -104,15 +111,9 @@ async function fetchGithubFilter() {
   }
 }
 
-const fetchGithubFilterWithCache = withFilterCache(
-  fetchGithubFilter,
-  "github-filter",
-  "github-cache.json",
-  { cachePolicy: process.env.CACHE_POLICY }
-);
-
-module.exports = fetchGithubFilterWithCache;
+module.exports = fetchGithubFilter;
+module.exports.fetchAllData = fetchAllPulls;
 
 if (require.main === module) {
-  executeFilterModule(fetchGithubFilterWithCache);
+  executeFilterModule(fetchGithubFilter);
 }

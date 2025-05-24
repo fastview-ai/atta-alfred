@@ -1,4 +1,4 @@
-const withFilterCache = require("./filter-cache");
+const withFilterCache = require("./filter-cache-async").withFilterCache;
 const {
   formatSubtitle,
   createFilterItem,
@@ -115,9 +115,16 @@ async function fetchAllVideos() {
   return allVideos;
 }
 
+const fetchAllVideosWithCache = withFilterCache(
+  fetchAllVideos,
+  "loom-filter",
+  "loom-cache.json",
+  { cachePolicy: process.env.CACHE_POLICY }
+);
+
 async function fetchLoomFilter() {
   try {
-    const videos = await fetchAllVideos();
+    const videos = await fetchAllVideosWithCache();
 
     const videoItems = videos.map(({ node }) =>
       createFilterItem({
@@ -153,15 +160,9 @@ async function fetchLoomFilter() {
   }
 }
 
-const fetchLoomFilterWithCache = withFilterCache(
-  fetchLoomFilter,
-  "loom-filter",
-  "loom-cache.json",
-  { cachePolicy: process.env.CACHE_POLICY }
-);
-
-module.exports = fetchLoomFilterWithCache;
+module.exports = fetchLoomFilter;
+module.exports.fetchAllData = fetchAllVideos;
 
 if (require.main === module) {
-  executeFilterModule(fetchLoomFilterWithCache);
+  executeFilterModule(fetchLoomFilter);
 }

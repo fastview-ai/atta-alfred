@@ -1,4 +1,4 @@
-const withFilterCache = require("./filter-cache");
+const withFilterCache = require("./filter-cache-async").withFilterCache;
 const {
   formatSubtitle,
   createFilterItem,
@@ -62,9 +62,16 @@ async function fetchAllDeployments() {
   return deployments;
 }
 
+const fetchAllDeploymentsWithCache = withFilterCache(
+  fetchAllDeployments,
+  "vercel-filter",
+  "vercel-cache.json",
+  { cachePolicy: process.env.CACHE_POLICY }
+);
+
 async function fetchVercelFilter() {
   try {
-    const deployments = await fetchAllDeployments();
+    const deployments = await fetchAllDeploymentsWithCache();
 
     const deploymentItems = deployments
       .sort((a, b) => {
@@ -143,15 +150,9 @@ async function fetchVercelFilter() {
   }
 }
 
-const fetchVercelFilterWithCache = withFilterCache(
-  fetchVercelFilter,
-  "vercel-filter",
-  "vercel-cache.json",
-  { cachePolicy: process.env.CACHE_POLICY }
-);
-
-module.exports = fetchVercelFilterWithCache;
+module.exports = fetchVercelFilter;
+module.exports.fetchAllData = fetchAllDeployments;
 
 if (require.main === module) {
-  executeFilterModule(fetchVercelFilterWithCache);
+  executeFilterModule(fetchVercelFilter);
 }
