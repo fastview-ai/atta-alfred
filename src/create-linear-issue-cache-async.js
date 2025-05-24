@@ -6,7 +6,6 @@ const {
   shouldThrottle,
   isProcessRunning,
 } = require("./data-cache-async");
-const { getMetadata, writePrefs } = require("./create-linear-issue-logic");
 
 module.exports = function createLinearIssueCacheAsync(linearToken) {
   // Check if another instance is already running to prevent race conditions
@@ -19,6 +18,9 @@ module.exports = function createLinearIssueCacheAsync(linearToken) {
 };
 
 if (require.main === module) {
+  // Import these only when running as main module to avoid circular dependency
+  const { getMetadata, writePrefs } = require("./create-linear-issue-logic");
+
   const linearToken = process.argv[2] || process.env.LINEAR_API_KEY;
 
   const log = createLogger("create-linear-issue-cache-async.log");
