@@ -1,3 +1,4 @@
+const { logError, logFetchResponseError } = require("./error-logger");
 const fs = require("fs");
 const createLinearIssueCacheAsync = require("./create-linear-issue-cache-async");
 
@@ -84,7 +85,8 @@ function readPrefs() {
       savedPrefs.users = savedPrefs.users || [];
     }
   } catch (e) {
-    console.error("Error reading prefs:", e.message);
+    logError(e, "readPrefs");
+    return {};
   }
 
   return savedPrefs || {};
@@ -149,6 +151,7 @@ async function getMetadata(linearToken) {
     });
 
     if (!response.ok) {
+      await logFetchResponseError(response, "getMetadata");
       return { error: "Failed to fetch metadata from Linear API" };
     }
 
@@ -161,7 +164,10 @@ async function getMetadata(linearToken) {
       priorities,
     };
   } catch (error) {
-    return { error: error.message };
+    logError(error, "createLinearIssueLogic");
+    return {
+      error: error.message,
+    };
   }
 }
 

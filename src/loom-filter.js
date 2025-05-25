@@ -1,3 +1,4 @@
+const { logError, logFetchResponseError } = require("./error-logger");
 const withFilterCache = require("./filter-cache-async").withFilterCache;
 const {
   formatSubtitle,
@@ -97,6 +98,7 @@ async function fetchAllVideos() {
     });
 
     if (!response.ok) {
+      await logFetchResponseError(response, "fetchAllData");
       throw new Error("Loom API request failed");
     }
 
@@ -150,10 +152,11 @@ async function loomFilter(query) {
     const allItems = wrapFilterResults(videoItems, navigationItem);
     return filterByWords(allItems, query);
   } catch (error) {
+    logError(error, "loomFilter");
     error.scriptFilterItem = createErrorItem({
       title: "Loom videos",
-      subtitle: "Configure Workflow with your Loom browser session cookie",
-      arg: "https://www.loom.com/looms/videos",
+      subtitle: "Configure Workflow with your Loom connect.sid cookie",
+      arg: "https://www.loom.com/my-videos",
       iconPath: "./src/icons/loom.png",
       source: "lm",
       uid: "loom-error",

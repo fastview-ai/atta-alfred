@@ -1,3 +1,4 @@
+const { logError, logFetchResponseError } = require("./error-logger");
 const withFilterCache = require("./filter-cache-async").withFilterCache;
 const {
   formatSubtitle,
@@ -41,7 +42,7 @@ async function fetchAllComments() {
     });
 
     if (!response.ok) {
-      console.error(response);
+      await logFetchResponseError(response, "fetchAllData");
       throw new Error("Figma API request failed");
     }
 
@@ -91,10 +92,11 @@ async function figmaFilter(query) {
     const allItems = wrapFilterResults(commentItems, navigationItem);
     return filterByWords(allItems, query);
   } catch (error) {
+    logError(error, "figmaFilter");
     error.scriptFilterItem = createErrorItem({
-      title: "Figma comments",
-      subtitle: "Configure Workflow with your Figma Personal AccessToken",
-      arg: "https://www.figma.com/",
+      title: "Figma files",
+      subtitle: "Configure Workflow with your Figma API Key",
+      arg: "https://www.figma.com/developers/api#access-tokens",
       iconPath: "./src/icons/figma.png",
       source: "fg",
       uid: "figma-error",

@@ -1,3 +1,5 @@
+const { logError, logErrorSilently } = require("./error-logger");
+
 const {
   createLogger,
   redirectConsoleToLog,
@@ -43,7 +45,7 @@ function withFilterCache(
       // If offline/error, try to load from cache
       const cached = readFromCache(cacheFile);
       if (cached) {
-        console.error(error);
+        logErrorSilently(error, `${filterModule} offline/error`);
         return cached.map((item) => ({
           ...item,
           title: `📴 ${item.title}`,
@@ -108,6 +110,6 @@ if (require.main === module) {
     })
     .catch((error) => {
       log(`Fetch failure: ${error.message}`);
-      console.error(error);
+      logError(error, `${filterModuleName} fetch failure`);
     });
 }

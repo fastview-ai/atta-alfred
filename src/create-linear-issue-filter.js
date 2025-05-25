@@ -1,3 +1,5 @@
+const { logError } = require("./error-logger");
+
 const utils = require("./create-linear-issue-logic");
 
 const linearToken = process.env.LINEAR_API_KEY;
@@ -57,18 +59,19 @@ async function main() {
 
     console.log(JSON.stringify(output));
   } catch (error) {
-    // If there's an error, return a single error item
+    logError(error, "create-linear-issue-filter");
     const output = {
       items: [
         {
-          uid: "error",
-          title: "Create Linear issue",
-          subtitle: "",
-          valid: false,
+          title: "Error occurred",
+          subtitle: error.message,
+          arg: "",
+          icon: {
+            path: "icon.png",
+          },
         },
       ],
     };
-
     console.log(JSON.stringify(output));
   }
 }

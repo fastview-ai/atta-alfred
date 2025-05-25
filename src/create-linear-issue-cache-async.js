@@ -1,4 +1,5 @@
 const path = require("path");
+const { logError } = require("./error-logger");
 const {
   createLogger,
   redirectConsoleToLog,
@@ -55,8 +56,10 @@ if (require.main === module) {
   getMetadata(linearToken)
     .then((metadata) => {
       if (metadata.error) {
-        log(`Metadata fetch failed: ${metadata.error}`);
-        console.error(`Metadata fetch failed: ${metadata.error}`);
+        logError(
+          new Error(`Metadata fetch failed: ${metadata.error}`),
+          "create-linear-issue-cache-async"
+        );
         return;
       }
 
@@ -65,7 +68,7 @@ if (require.main === module) {
       log("Metadata cache write successful");
     })
     .catch((error) => {
-      log(`Metadata fetch failure: ${error.message}`);
-      console.error(error);
+      log(`Fetch failure: ${error.message}`);
+      logError(error, "create-linear-issue-cache-async main");
     });
 }

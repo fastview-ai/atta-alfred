@@ -1,3 +1,4 @@
+const { logError, logFetchResponseError } = require("./error-logger");
 const withFilterCache = require("./filter-cache-async").withFilterCache;
 const {
   formatSubtitle,
@@ -208,7 +209,7 @@ async function fetchAllIssues() {
     });
 
     if (!response.ok) {
-      console.error(response);
+      await logFetchResponseError(response, "fetchAllData");
       throw new Error("Linear API request failed");
     }
 
@@ -273,10 +274,11 @@ async function linearFilter(query) {
     // Apply text search on the filtered results
     return filterByWords(allItems, searchQuery);
   } catch (error) {
+    logError(error, "linearFilter");
     error.scriptFilterItem = createErrorItem({
       title: "Linear issues",
       subtitle: "Configure Workflow with your Linear API Key",
-      arg: `https://linear.app/${linearTeam}/settings/account/security/api-keys/new`,
+      arg: "https://linear.app/settings/api",
       iconPath: "./src/icons/linear.png",
       source: "ln",
       uid: "linear-error",

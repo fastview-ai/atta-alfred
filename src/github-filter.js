@@ -1,3 +1,4 @@
+const { logError, logFetchResponseError } = require("./error-logger");
 const withFilterCache = require("./filter-cache-async").withFilterCache;
 const {
   formatSubtitle,
@@ -51,7 +52,7 @@ async function fetchAllPulls() {
     );
 
     if (!response.ok) {
-      console.error(response);
+      await logFetchResponseError(response, "fetchAllData");
       throw new Error("GitHub API request failed");
     }
 
@@ -101,6 +102,7 @@ async function githubFilter(query) {
     const allItems = wrapFilterResults(pullItems, navigationItem);
     return filterByWords(allItems, query);
   } catch (error) {
+    logError(error, "githubFilter");
     error.scriptFilterItem = createErrorItem({
       title: "GitHub pull requests",
       subtitle: "Configure Workflow with your GitHub API Key",
