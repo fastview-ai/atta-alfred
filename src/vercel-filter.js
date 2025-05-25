@@ -7,6 +7,7 @@ const {
   wrapFilterResults,
   getEmojiOrFallback,
   executeFilterModule,
+  filterByQuery,
 } = require("./filter-logic");
 
 const vercelToken = process.env.VERCEL_API_KEY;
@@ -69,7 +70,7 @@ const fetchAllDeploymentsWithCache = withFilterCache(
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-async function fetchVercelFilter() {
+async function vercelFilter(query) {
   try {
     const deployments = await fetchAllDeploymentsWithCache();
 
@@ -136,7 +137,8 @@ async function fetchVercelFilter() {
       uid: "vercel-navigation",
     });
 
-    return wrapFilterResults(deploymentItems, navigationItem);
+    const allItems = wrapFilterResults(deploymentItems, navigationItem);
+    return filterByQuery(allItems, query);
   } catch (error) {
     error.scriptFilterItem = createErrorItem({
       title: "Vercel deployments",
@@ -150,9 +152,10 @@ async function fetchVercelFilter() {
   }
 }
 
-module.exports = fetchVercelFilter;
+module.exports = vercelFilter;
 module.exports.fetchAllData = fetchAllDeployments;
 
 if (require.main === module) {
-  executeFilterModule(fetchVercelFilter);
+  const query = process.argv[2];
+  executeFilterModule(() => vercelFilter(query));
 }

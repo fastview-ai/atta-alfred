@@ -6,6 +6,7 @@ const {
   createNavigationItem,
   wrapFilterResults,
   executeFilterModule,
+  filterByQuery,
 } = require("./filter-logic");
 
 const figmaToken = process.env.FIGMA_API_KEY;
@@ -59,7 +60,7 @@ const fetchAllCommentsWithCache = withFilterCache(
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-async function fetchFigmaFilter() {
+async function figmaFilter(query) {
   try {
     const allComments = await fetchAllCommentsWithCache();
 
@@ -87,7 +88,8 @@ async function fetchFigmaFilter() {
       uid: "figma-navigation",
     });
 
-    return wrapFilterResults(commentItems, navigationItem);
+    const allItems = wrapFilterResults(commentItems, navigationItem);
+    return filterByQuery(allItems, query);
   } catch (error) {
     error.scriptFilterItem = createErrorItem({
       title: "Figma comments",
@@ -101,9 +103,10 @@ async function fetchFigmaFilter() {
   }
 }
 
-module.exports = fetchFigmaFilter;
+module.exports = figmaFilter;
 module.exports.fetchAllData = fetchAllComments;
 
 if (require.main === module) {
-  executeFilterModule(fetchFigmaFilter);
+  const query = process.argv[2];
+  executeFilterModule(() => figmaFilter(query));
 }

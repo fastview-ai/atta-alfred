@@ -129,6 +129,30 @@ function getEmojiOrFallback(emoji, fallback) {
   return process.env.NODE_ENV === "production" ? "❓" : emoji || fallback;
 }
 
+// Common query filtering function - matches words in any order
+function filterByQuery(items, query) {
+  if (!query || query.trim() === "") {
+    return items;
+  }
+
+  const queryWords = query
+    .toLowerCase()
+    .trim()
+    .split(/\s+/)
+    .filter(word => word.length > 0);
+
+  if (queryWords.length === 0) {
+    return items;
+  }
+
+  return items.filter(item => {
+    const searchText = `${item.title} ${item.subtitle}`.toLowerCase();
+    
+    // Check if all query words exist somewhere in the search text
+    return queryWords.every(word => searchText.includes(word));
+  });
+}
+
 module.exports = {
   formatRelativeDate,
   formatSubtitle,
@@ -139,4 +163,5 @@ module.exports = {
   createNavigationItem,
   wrapFilterResults,
   getEmojiOrFallback,
+  filterByQuery,
 };
