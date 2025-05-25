@@ -43,6 +43,7 @@ function withFilterCache(
       // If offline/error, try to load from cache
       const cached = readFromCache(cacheFile);
       if (cached) {
+        console.error(error);
         return cached.map((item) => ({
           ...item,
           title: `📴 ${item.title}`,
