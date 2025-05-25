@@ -73,7 +73,7 @@ function redirectConsoleToLog(log, prefix = "") {
 
 // Generic async cache spawner
 function spawnAsyncCache(scriptName, args = []) {
-  const nodePath = process.env.NODE_PATH ?? "node";
+  const nodePath = process.env.NODE_PATH || "node";
   const cwd = process.cwd();
   const scriptPath = path.join(cwd, "src", scriptName);
 
