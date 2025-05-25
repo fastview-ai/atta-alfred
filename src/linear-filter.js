@@ -7,8 +7,13 @@ const {
   wrapFilterResults,
   getEmojiOrFallback,
   executeFilterModule,
-  filterByQuery,
+  filterByWords,
 } = require("./filter-logic");
+const {
+  priorities,
+  sanitise,
+  fuzzyMatch,
+} = require("./create-linear-issue-logic");
 
 const linearToken = process.env.LINEAR_API_KEY;
 const linearTeam = process.env.LINEAR_TEAM;
@@ -42,6 +47,107 @@ const priorityName = {
   4: "3️⃣",
 };
 
+// Parse query to extract filter parameters
+function parseQueryFilters(query) {
+  if (!query) return { filters: {}, searchQuery: "" };
+
+  const words = query.split(" ");
+  const paramWords = words.filter(
+    (word) => word.startsWith("-") && word.length > 1
+  );
+  const searchWords = words.filter(
+    (word) => !word.startsWith("-") || word.length === 1
+  );
+
+  const filters = {
+    team: null,
+    project: null,
+    assignee: null,
+    priority: null,
+  };
+
+  // Process each parameter word
+  paramWords.forEach((word) => {
+    const param = word.substring(1).toLowerCase();
+
+    // Check for priority match
+    const priorityMatch = priorities.find((p) => fuzzyMatch(p.label, param));
+    if (priorityMatch) {
+      filters.priority = priorityMatch.id;
+    }
+    // Other parameters will be matched against actual data
+    else {
+      // Store the parameter for later matching
+      if (!filters.unmatchedParams) filters.unmatchedParams = [];
+      filters.unmatchedParams.push(param);
+    }
+  });
+
+  return {
+    filters,
+    searchQuery: searchWords.join(" "),
+  };
+}
+
+// Apply filters to issues
+function filterIssuesBySwitches(issues, filters) {
+  // If no filters at all, return all issues
+  if (!filters || Object.keys(filters).length === 0) {
+    return issues;
+  }
+
+  // If only priority filter is set (no unmatched params)
+  if (!filters.unmatchedParams || filters.unmatchedParams.length === 0) {
+    if (filters.priority !== null) {
+      return issues.filter((issue) => issue.priority === filters.priority);
+    }
+    return issues;
+  }
+
+  // Apply filters including unmatched params
+  return issues.filter((issue) => {
+    // Check priority filter first
+    if (filters.priority !== null && issue.priority !== filters.priority) {
+      return false;
+    }
+
+    // All unmatched params must match (intersection)
+    for (const param of filters.unmatchedParams) {
+      let paramMatched = false;
+
+      // Check team
+      if (
+        issue.team &&
+        (fuzzyMatch(issue.team.name, param) ||
+          fuzzyMatch(issue.team.key, param))
+      ) {
+        paramMatched = true;
+      }
+      // Check project
+      else if (issue.project && fuzzyMatch(issue.project.name, param)) {
+        paramMatched = true;
+      }
+      // Check assignee
+      else if (
+        issue.assignee &&
+        (fuzzyMatch(issue.assignee.name, param) ||
+          (issue.assignee.displayName &&
+            fuzzyMatch(issue.assignee.displayName, param)))
+      ) {
+        paramMatched = true;
+      }
+
+      // If this param didn't match anything, exclude the issue
+      if (!paramMatched) {
+        return false;
+      }
+    }
+
+    // All params matched, include this issue
+    return true;
+  });
+}
+
 async function fetchAllIssues() {
   if (!linearToken) {
     throw new Error("Missing LINEAR_API_KEY env var");
@@ -71,9 +177,22 @@ async function fetchAllIssues() {
                 identifier 
                 state { name }
                 updatedAt
-                assignee { name }
+                assignee { 
+                  id
+                  name 
+                  displayName
+                }
                 url
                 priority
+                team {
+                  id
+                  key
+                  name
+                }
+                project {
+                  id
+                  name
+                }
               }
               pageInfo {
                 hasNextPage
@@ -114,7 +233,13 @@ async function linearFilter(query) {
   try {
     const allIssues = await fetchAllIssuesWithCache();
 
-    const issueItems = allIssues.map((issue) =>
+    // Parse query to extract filters and search query
+    const { filters, searchQuery } = parseQueryFilters(query);
+
+    // Apply parameter filters
+    const filteredIssues = filterIssuesBySwitches(allIssues, filters);
+
+    const issueItems = filteredIssues.map((issue) =>
       createFilterItem({
         title: [
           getEmoji(issue.state.name.toLowerCase()),
@@ -145,7 +270,8 @@ async function linearFilter(query) {
     });
 
     const allItems = wrapFilterResults(issueItems, navigationItem);
-    return filterByQuery(allItems, query);
+    // Apply text search on the filtered results
+    return filterByWords(allItems, searchQuery);
   } catch (error) {
     error.scriptFilterItem = createErrorItem({
       title: "Linear issues",
