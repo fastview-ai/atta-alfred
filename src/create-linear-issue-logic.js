@@ -208,7 +208,7 @@ function writePrefs(prefs, isDryRun = false) {
 
 // Parse input into parameters and title
 function parseInput(input) {
-  const inputWords = input.split(" ");
+  const inputWords = input.replace(/^\s*ln\s*/, "").split(" ");
   const paramWords = inputWords.filter(
     (word) => word.startsWith("-") && word.length > 1
   );
