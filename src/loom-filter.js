@@ -6,7 +6,7 @@ const {
   createNavigationItem,
   wrapFilterResults,
   executeFilterModule,
-  filterByQuery,
+  filterByWords,
 } = require("./filter-logic");
 
 const loomConnectSID = process.env.LOOM_CONNECT_SID;
@@ -148,7 +148,7 @@ async function loomFilter(query) {
     });
 
     const allItems = wrapFilterResults(videoItems, navigationItem);
-    return filterByQuery(allItems, query);
+    return filterByWords(allItems, query);
   } catch (error) {
     error.scriptFilterItem = createErrorItem({
       title: "Loom videos",

@@ -7,7 +7,7 @@ const {
   wrapFilterResults,
   getEmojiOrFallback,
   executeFilterModule,
-  filterByQuery,
+  filterByWords,
 } = require("./filter-logic");
 
 const vercelToken = process.env.VERCEL_API_KEY;
@@ -138,7 +138,7 @@ async function vercelFilter(query) {
     });
 
     const allItems = wrapFilterResults(deploymentItems, navigationItem);
-    return filterByQuery(allItems, query);
+    return filterByWords(allItems, query);
   } catch (error) {
     error.scriptFilterItem = createErrorItem({
       title: "Vercel deployments",

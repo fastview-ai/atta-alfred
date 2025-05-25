@@ -6,7 +6,7 @@ const {
   createNavigationItem,
   wrapFilterResults,
   executeFilterModule,
-  filterByQuery,
+  filterByWords,
 } = require("./filter-logic");
 
 const figmaToken = process.env.FIGMA_API_KEY;
@@ -89,7 +89,7 @@ async function figmaFilter(query) {
     });
 
     const allItems = wrapFilterResults(commentItems, navigationItem);
-    return filterByQuery(allItems, query);
+    return filterByWords(allItems, query);
   } catch (error) {
     error.scriptFilterItem = createErrorItem({
       title: "Figma comments",

@@ -7,7 +7,7 @@ const {
   wrapFilterResults,
   getEmojiOrFallback,
   executeFilterModule,
-  filterByQuery,
+  filterByWords,
 } = require("./filter-logic");
 
 const githubToken = process.env.GITHUB_API_KEY;
@@ -99,7 +99,7 @@ async function githubFilter(query) {
     });
 
     const allItems = wrapFilterResults(pullItems, navigationItem);
-    return filterByQuery(allItems, query);
+    return filterByWords(allItems, query);
   } catch (error) {
     error.scriptFilterItem = createErrorItem({
       title: "GitHub pull requests",
