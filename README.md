@@ -46,11 +46,11 @@ This workflow uses Node.js for script execution. By default it uses `node` comma
 
 ### Quick Navigation
 - `fv` - Shows a list of searchable resources
-- `fv` - Searches Linear issues by issue identifier or title
-- `fv` - Searches GitHub pull requests by branch name or title
-- `fv` - Searches Vercel deployments by branch name or title
-- `fv` - Searches Figma comments by content
-- `fv` - Searches Loom videos by title
+- `fv ln` - Searches Linear issues by issue identifier or title
+- `fv gh` - Searches GitHub pull requests by branch name or title
+- `fv vc` - Searches Vercel deployments by branch name or title
+- `fv fg` - Searches Figma comments by content
+- `fv lm` - Searches Loom videos by title
 
 ### Issue Creation
 
