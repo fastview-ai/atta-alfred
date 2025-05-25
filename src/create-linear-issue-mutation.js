@@ -1,3 +1,4 @@
+const { logError, logFetchResponseError } = require("./error-logger");
 const { execSync } = require("child_process");
 const { filterCacheAsync } = require("./filter-cache-async");
 const utils = require("./create-linear-issue-logic");
@@ -77,13 +78,7 @@ async function createIssueMutation(
   filterCacheAsync("linear-filter", "linear-cache.json");
 
   if (!response?.ok) {
-    console.error(response);
-    try {
-      const errorBody = await response.json();
-      console.error("Response body:", JSON.stringify(errorBody, null, 2));
-    } catch (e) {
-      // Response doesn't contain valid JSON
-    }
+    await logFetchResponseError(response, "createLinearIssue");
     throw new Error("Fetch Error: " + (response.statusText ?? "unknown"));
   }
 
@@ -162,12 +157,12 @@ async function main() {
       );
       console.log(issue.identifier);
     } catch (error) {
-      console.error(error);
+      logError(error, "createLinearIssue");
       console.log("Failed to create the issue.");
       return;
     }
   } catch (error) {
-    console.error(error);
+    logError(error, "main");
     console.log("An unexpected error occurred.");
     return;
   }

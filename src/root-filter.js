@@ -2,6 +2,7 @@
  * Usage: node src/root-filter.js [gh|ln|vc|lm|fg]
  */
 
+const { logError, logErrorSilently } = require("./error-logger");
 const vercelFilter = require("./vercel-filter");
 const githubFilter = require("./github-filter");
 const linearFilter = require("./linear-filter");
@@ -13,24 +14,24 @@ async function rootFilter(sourceFilter, restQuery) {
   try {
     const items = await Promise.all([
       vercelFilter(restQuery).catch((error) => {
-        console.error(error);
-        return [error.scriptFilterItem];
+        logErrorSilently(error, "vercelFilter");
+        return [];
       }),
       githubFilter(restQuery).catch((error) => {
-        console.error(error);
-        return [error.scriptFilterItem];
+        logErrorSilently(error, "githubFilter");
+        return [];
       }),
       linearFilter(restQuery).catch((error) => {
-        console.error(error);
-        return [error.scriptFilterItem];
+        logErrorSilently(error, "linearFilter");
+        return [];
       }),
       loomFilter(restQuery).catch((error) => {
-        console.error(error);
-        return [error.scriptFilterItem];
+        logErrorSilently(error, "loomFilter");
+        return [];
       }),
       figmaFilter(restQuery).catch((error) => {
-        console.error(error);
-        return [error.scriptFilterItem];
+        logErrorSilently(error, "figmaFilter");
+        return [];
       }),
     ]);
 
@@ -40,8 +41,9 @@ async function rootFilter(sourceFilter, restQuery) {
 
     return sortByDateDescending(allItems);
   } catch (error) {
+    logError(error, "rootFilter");
     error.scriptFilterItem = {
-      title: "Unknown error",
+      title: "Error occurred",
       subtitle: error.message,
       icon: {
         path: "./src/icons/fastview.png",
@@ -67,11 +69,11 @@ if (require.main === module) {
       console.log(JSON.stringify({ items }));
     })
     .catch((error) => {
-      console.error(error);
+      logError(error, "rootFilter main");
       console.log(
         JSON.stringify({
           items: [error.scriptFilterItem],
         })
       );
     });
-}
+} 

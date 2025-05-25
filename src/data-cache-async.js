@@ -1,3 +1,5 @@
+const { logErrorSilently } = require("./error-logger");
+
 const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
@@ -99,7 +101,7 @@ function writeToCache(cacheFile, result) {
       fs.writeFileSync(cachePath, JSON.stringify(result));
     } catch (error) {
       // Ignore but log it
-      console.error("Error writing to cache:", error);
+      logErrorSilently(error, "writeToCache");
     }
   }
 }
@@ -119,7 +121,7 @@ function readFromCache(cacheFile) {
     return null;
   } catch (error) {
     // Ignore but log it
-    console.error("Error reading from cache:", error);
+    logErrorSilently(error, "readFromCache");
     return null;
   }
 }

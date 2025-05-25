@@ -1,3 +1,4 @@
+const { logError, logFetchResponseError } = require("./error-logger");
 const withFilterCache = require("./filter-cache-async").withFilterCache;
 const {
   formatSubtitle,
@@ -49,7 +50,7 @@ async function fetchAllDeployments() {
     });
 
     if (!response.ok) {
-      console.error(response);
+      await logFetchResponseError(response, "fetchAllData");
       throw new Error("Vercel API request failed");
     }
 
@@ -140,6 +141,7 @@ async function vercelFilter(query) {
     const allItems = wrapFilterResults(deploymentItems, navigationItem);
     return filterByWords(allItems, query);
   } catch (error) {
+    logError(error, "vercelFilter");
     error.scriptFilterItem = createErrorItem({
       title: "Vercel deployments",
       subtitle: "Configure Workflow with your Vercel API Key",

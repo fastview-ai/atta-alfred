@@ -1,3 +1,5 @@
+const { logError } = require("./error-logger");
+
 // Common date formatting function used across all filters
 function formatRelativeDate(date) {
   const now = new Date();
@@ -97,10 +99,19 @@ function executeFilterModule(filterWithCache, errorItem) {
       );
     })
     .catch((error) => {
-      console.error(error);
+      logError(error, "filter-logic main");
       console.log(
         JSON.stringify({
-          items: [errorItem || error.scriptFilterItem],
+          items: [
+            {
+              title: "Error occurred",
+              subtitle: error.message,
+              arg: "",
+              icon: {
+                path: "icon.png",
+              },
+            },
+          ],
         })
       );
     });
