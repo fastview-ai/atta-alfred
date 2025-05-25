@@ -8,7 +8,7 @@ const linearFilter = require("./linear-filter");
 const loomFilter = require("./loom-filter");
 const figmaFilter = require("./figma-filter");
 
-async function fetchRootFilter(sourceFilter) {
+async function rootFilter(sourceFilter) {
   try {
     const items = await Promise.all([
       vercelFilter().catch((error) => {
@@ -52,14 +52,14 @@ async function fetchRootFilter(sourceFilter) {
   }
 }
 
-module.exports = fetchRootFilter;
+module.exports = rootFilter;
 
 if (require.main === module) {
   const query = process.argv[2];
   const sourceFilter =
-    query?.match(/^(?<filter>gh|li|vc)\b/)?.groups?.filter ?? null;
+    query?.match(/^(?<filter>gh|li|vc|lm|fg)\b/)?.groups?.filter ?? null;
 
-  fetchRootFilter(sourceFilter)
+  rootFilter(sourceFilter)
     .then((items) => {
       console.log(JSON.stringify({ items }));
     })

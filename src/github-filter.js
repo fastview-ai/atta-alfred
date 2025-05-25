@@ -7,6 +7,7 @@ const {
   wrapFilterResults,
   getEmojiOrFallback,
   executeFilterModule,
+  filterByQuery,
 } = require("./filter-logic");
 
 const githubToken = process.env.GITHUB_API_KEY;
@@ -71,7 +72,7 @@ const fetchAllPullsWithCache = withFilterCache(
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-async function fetchGithubFilter() {
+async function githubFilter(query) {
   try {
     const pulls = await fetchAllPullsWithCache();
 
@@ -97,7 +98,8 @@ async function fetchGithubFilter() {
       uid: "github-navigation",
     });
 
-    return wrapFilterResults(pullItems, navigationItem);
+    const allItems = wrapFilterResults(pullItems, navigationItem);
+    return filterByQuery(allItems, query);
   } catch (error) {
     error.scriptFilterItem = createErrorItem({
       title: "GitHub pull requests",
@@ -111,9 +113,10 @@ async function fetchGithubFilter() {
   }
 }
 
-module.exports = fetchGithubFilter;
+module.exports = githubFilter;
 module.exports.fetchAllData = fetchAllPulls;
 
 if (require.main === module) {
-  executeFilterModule(fetchGithubFilter);
+  const query = process.argv[2];
+  executeFilterModule(() => githubFilter(query));
 }

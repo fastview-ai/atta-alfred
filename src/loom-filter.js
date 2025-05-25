@@ -6,6 +6,7 @@ const {
   createNavigationItem,
   wrapFilterResults,
   executeFilterModule,
+  filterByQuery,
 } = require("./filter-logic");
 
 const loomConnectSID = process.env.LOOM_CONNECT_SID;
@@ -122,7 +123,7 @@ const fetchAllVideosWithCache = withFilterCache(
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-async function fetchLoomFilter() {
+async function loomFilter(query) {
   try {
     const videos = await fetchAllVideosWithCache();
 
@@ -146,7 +147,8 @@ async function fetchLoomFilter() {
       uid: "loom-navigation",
     });
 
-    return wrapFilterResults(videoItems, navigationItem);
+    const allItems = wrapFilterResults(videoItems, navigationItem);
+    return filterByQuery(allItems, query);
   } catch (error) {
     error.scriptFilterItem = createErrorItem({
       title: "Loom videos",
@@ -160,9 +162,10 @@ async function fetchLoomFilter() {
   }
 }
 
-module.exports = fetchLoomFilter;
+module.exports = loomFilter;
 module.exports.fetchAllData = fetchAllVideos;
 
 if (require.main === module) {
-  executeFilterModule(fetchLoomFilter);
+  const query = process.argv[2];
+  executeFilterModule(() => loomFilter(query));
 }

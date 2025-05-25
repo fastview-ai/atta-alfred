@@ -7,6 +7,7 @@ const {
   wrapFilterResults,
   getEmojiOrFallback,
   executeFilterModule,
+  filterByQuery,
 } = require("./filter-logic");
 
 const linearToken = process.env.LINEAR_API_KEY;
@@ -109,7 +110,7 @@ const fetchAllIssuesWithCache = withFilterCache(
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-async function fetchLinearFilter() {
+async function linearFilter() {
   try {
     const allIssues = await fetchAllIssuesWithCache();
 
@@ -157,9 +158,9 @@ async function fetchLinearFilter() {
   }
 }
 
-module.exports = fetchLinearFilter;
+module.exports = linearFilter;
 module.exports.fetchAllData = fetchAllIssues;
 
 if (require.main === module) {
-  executeFilterModule(fetchLinearFilter);
+  executeFilterModule(linearFilter);
 }
