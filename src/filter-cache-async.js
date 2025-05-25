@@ -26,11 +26,11 @@ function withFilterCache(
       if (cachePolicy === "cache-only") {
         // cache policy cache only means we always eagerly use the cache
         // thus returning stale results
-        const staleResult = readFromCache(cacheFile);
-        if (staleResult) {
-          filterCacheAsync(filterModule, cacheFile);
-          return staleResult;
-        }
+      const staleResult = readFromCache(cacheFile);
+      if (!staleResult.isStale) {
+        filterCacheAsync(filterModule, cacheFile);
+        return staleResult;
+      }
 
         const result = await filterFn();
         writeToCache(cacheFile, result);
@@ -46,10 +46,7 @@ function withFilterCache(
       const cached = readFromCache(cacheFile);
       if (cached) {
         logErrorSilently(error, `${filterModule} offline/error`);
-        return cached.map((item) => ({
-          ...item,
-          title: `📴 ${item.title}`,
-        }));
+        return cached;
       } else {
         throw error;
       }
@@ -78,13 +75,14 @@ if (require.main === module) {
 
   const { fetchAllData } = require(`./${filterModuleName}`);
 
+  const logPrefix = `[${filterModuleName}] `;
   const log = createLogger("filter-cache-async.log");
 
   // Redirect console output to log file
-  redirectConsoleToLog(log, `[${filterModuleName}] `);
+  redirectConsoleToLog(log, logPrefix);
 
-  // Check if cache file exists and was modified in the last 5 seconds
-  const THROTTLE_TIME = 5 * 1000; // 5 seconds
+  // Check if cache file exists and was modified recently
+  const THROTTLE_TIME = 15 * 1000; // ms
 
   if (shouldThrottle(filterCacheName, THROTTLE_TIME)) {
     const path = require("path");
@@ -96,20 +94,23 @@ if (require.main === module) {
     log(
       `Skipping fetch - cache file modified ${Math.round(
         timeSinceModified / 1000
-      )}s ago (throttle: ${THROTTLE_TIME / 1000}s)`
+      )}s ago (throttle: ${THROTTLE_TIME / 1000}s)`,
+      logPrefix
     );
     return;
   }
 
-  log("Fetch");
+  log("Fetch", logPrefix);
+  const start = Date.now();
   fetchAllData()
     .then((result) => {
-      log("Fetch success, caching to disk");
+      const end = Date.now();
+      log(`Fetch success, caching to disk in ${end - start}ms`, logPrefix);
       writeToCache(filterCacheName, result);
-      log("Caching to disk success");
+      log("Caching to disk success", logPrefix);
     })
     .catch((error) => {
-      log(`Fetch failure: ${error.message}`);
-      logError(error, `${filterModuleName} fetch failure`);
+      log(`Fetch failure: ${error.message}`, logPrefix);
+      logError(error, `${filterModuleName} fetch failure`, logPrefix);
     });
 }
