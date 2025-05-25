@@ -6,6 +6,10 @@ function formatRelativeDate(date) {
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) {
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    if (diffHours <= 8) {
+      return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`;
+    }
     return "Today";
   } else if (diffDays === 1) {
     return "Yesterday";
