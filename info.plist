@@ -8,6 +8,21 @@
 	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
+		<key>012F8BCB-881C-4AFD-9F14-2CEA03718538</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>0FEBCB43-6EE1-4039-AD70-23AD82BC91CA</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>0FEBCB43-6EE1-4039-AD70-23AD82BC91CA</key>
+		<array/>
 		<key>26CD270C-55DD-42F2-B9A7-C07BC43D627C</key>
 		<array>
 			<dict>
@@ -116,21 +131,21 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>browser</key>
+				<key>argumenttype</key>
+				<integer>2</integer>
+				<key>keyword</key>
+				<string>fv debug</string>
+				<key>subtext</key>
 				<string></string>
-				<key>skipqueryencode</key>
+				<key>text</key>
+				<string>Open error log</string>
+				<key>withspace</key>
 				<false/>
-				<key>skipvarencode</key>
-				<false/>
-				<key>spaces</key>
-				<string></string>
-				<key>url</key>
-				<string>{var:url}</string>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
+			<string>alfred.workflow.input.keyword</string>
 			<key>uid</key>
-			<string>D7001DE8-27F5-41C0-93B3-D8282B029029</string>
+			<string>012F8BCB-881C-4AFD-9F14-2CEA03718538</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -186,6 +201,42 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>openwith</key>
+				<string>/Applications/Cursor.app</string>
+				<key>sourcefile</key>
+				<string>logs/error.log</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openfile</string>
+			<key>uid</key>
+			<string>0FEBCB43-6EE1-4039-AD70-23AD82BC91CA</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>skipqueryencode</key>
+				<false/>
+				<key>skipvarencode</key>
+				<false/>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>{var:url}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>D7001DE8-27F5-41C0-93B3-D8282B029029</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>autopaste</key>
 				<true/>
 				<key>clipboardtext</key>
@@ -216,6 +267,29 @@
 			<string>F49E83BD-DACF-42E7-9DFE-37934BF52E61</string>
 			<key>version</key>
 			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>${NODE_PATH:-node} ./src/create-linear-issue-mutation.js "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>32AC4E08-866E-4724-B41A-AAC8167C415C</string>
+			<key>version</key>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -266,29 +340,6 @@
 			<string>278EA840-F934-426B-8273-934ADF4676B9</string>
 			<key>version</key>
 			<integer>3</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>102</integer>
-				<key>script</key>
-				<string>${NODE_PATH:-node} ./src/create-linear-issue-mutation.js "$1"</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>11</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>32AC4E08-866E-4724-B41A-AAC8167C415C</string>
-			<key>version</key>
-			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -446,6 +497,20 @@ This workflow uses Node.js for script execution. By default it uses `node` comma
 Created by Omar Chehab (@oac)</string>
 	<key>uidata</key>
 	<dict>
+		<key>012F8BCB-881C-4AFD-9F14-2CEA03718538</key>
+		<dict>
+			<key>xpos</key>
+			<real>485</real>
+			<key>ypos</key>
+			<real>15</real>
+		</dict>
+		<key>0FEBCB43-6EE1-4039-AD70-23AD82BC91CA</key>
+		<dict>
+			<key>xpos</key>
+			<real>665</real>
+			<key>ypos</key>
+			<real>15</real>
+		</dict>
 		<key>22299E4C-2DA4-4270-90D0-BC55053DD221</key>
 		<dict>
 			<key>xpos</key>
