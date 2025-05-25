@@ -10,9 +10,9 @@ function createLogger(
   maxLogSize = 1024 * 1024,
   maxLogLines = 1000
 ) {
-  const log = (msg) => {
+  const log = (msg, prefix = "") => {
     const timestamp = new Date().toISOString();
-    const logEntry = `${timestamp}: ${msg}\n`;
+    const logEntry = `${timestamp}: ${prefix}${msg}\n`;
 
     try {
       // Ensure logs directory exists
@@ -116,6 +116,14 @@ function readFromCache(cacheFile) {
       if (!Array.isArray(cached) || cached.length === 0) {
         return null;
       }
+
+      // Check if cache is stale (hasn't been touched in a while)
+      const stats = fs.statSync(cachePath);
+      const timeSinceModified = Date.now() - stats.mtime.getTime();
+      const STALE_THRESHOLD = 60 * 60 * 1000; // ms
+      cached.isStale = timeSinceModified > STALE_THRESHOLD;
+      cached.titlePrefix = cached.isStale ? "📴 " : "";
+
       return cached;
     }
     return null;

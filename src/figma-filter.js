@@ -69,7 +69,11 @@ async function figmaFilter(query) {
       .filter((comment) => comment.client_meta?.node_id != null)
       .map((comment) =>
         createFilterItem({
-          title: [getEmoji(comment.resolved_at != null), comment.message]
+          title: [
+            allComments.titlePrefix,
+            getEmoji(comment.resolved_at != null),
+            comment.message,
+          ]
             .filter(Boolean)
             .join(" "),
           subtitle: formatSubtitle(comment.user.handle, comment.created_at),

@@ -38,7 +38,7 @@ async function fetchAllDeployments() {
   let hasMore = true;
 
   while (hasMore) {
-    const url = new URL("https://api.vercel.com/v6/deployments");
+    const url = new URL("https://api.vercel.com/v6/deployments?limit=100");
     if (until) {
       url.searchParams.set("until", until);
     }
@@ -73,9 +73,9 @@ const fetchAllDeploymentsWithCache = withFilterCache(
 
 async function vercelFilter(query) {
   try {
-    const deployments = await fetchAllDeploymentsWithCache();
+    const allDeployments = await fetchAllDeploymentsWithCache();
 
-    const deploymentItems = deployments
+    const deploymentItems = allDeployments
       .sort((a, b) => {
         // Sort by githubCommitRef first
         const refA = a.meta?.githubCommitRef || "";
@@ -112,6 +112,7 @@ async function vercelFilter(query) {
       .map((deployment) =>
         createFilterItem({
           title: [
+            allDeployments.titlePrefix,
             getEmoji(deployment.readyState),
             deployment.meta?.githubCommitRef,
             deployment.meta?.githubCommitMessage,

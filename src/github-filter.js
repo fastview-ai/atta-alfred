@@ -75,11 +75,16 @@ const fetchAllPullsWithCache = withFilterCache(
 
 async function githubFilter(query) {
   try {
-    const pulls = await fetchAllPullsWithCache();
+    const allPulls = await fetchAllPullsWithCache();
 
-    const pullItems = pulls.map((pr) =>
+    const pullItems = allPulls.map((pr) =>
       createFilterItem({
-        title: [getEmoji(pr.state, pr.merged_at), pr.head.ref, pr.title]
+        title: [
+          allPulls.titlePrefix,
+          getEmoji(pr.state, pr.merged_at),
+          pr.head.ref,
+          pr.title,
+        ]
           .filter(Boolean)
           .join(" "),
         subtitle: formatSubtitle(pr.user.login, pr.updated_at),

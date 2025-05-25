@@ -127,11 +127,13 @@ const fetchAllVideosWithCache = withFilterCache(
 
 async function loomFilter(query) {
   try {
-    const videos = await fetchAllVideosWithCache();
+    const allVideos = await fetchAllVideosWithCache();
 
-    const videoItems = videos.map(({ node }) =>
+    const videoItems = allVideos.map(({ node }) =>
       createFilterItem({
-        title: `🎥 ${node.name}`,
+        title: [allVideos.titlePrefix, `🎥`, node.name]
+          .filter(Boolean)
+          .join(" "),
         subtitle: formatSubtitle(node.owner.display_name, node.createdAt),
         arg: `https://www.loom.com/share/${node.id}`,
         iconPath: "./src/icons/loom.png",

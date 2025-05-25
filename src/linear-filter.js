@@ -243,6 +243,7 @@ async function linearFilter(query) {
     const issueItems = filteredIssues.map((issue) =>
       createFilterItem({
         title: [
+          allIssues.titlePrefix,
           getEmoji(issue.state.name.toLowerCase()),
           issue.identifier,
           priorityName[issue.priority],
