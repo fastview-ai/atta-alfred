@@ -1,5 +1,5 @@
 /**
- * Usage: node src/root-filter.js [gh|li|vc|lm|fg]
+ * Usage: node src/root-filter.js [gh|ln|vc|lm|fg]
  */
 
 const vercelFilter = require("./vercel-filter");
@@ -7,36 +7,38 @@ const githubFilter = require("./github-filter");
 const linearFilter = require("./linear-filter");
 const loomFilter = require("./loom-filter");
 const figmaFilter = require("./figma-filter");
+const { sortByDateDescending } = require("./filter-logic");
 
-async function rootFilter(sourceFilter) {
+async function rootFilter(sourceFilter, restQuery) {
   try {
     const items = await Promise.all([
-      vercelFilter().catch((error) => {
+      vercelFilter(restQuery).catch((error) => {
         console.error(error);
         return [error.scriptFilterItem];
       }),
-      githubFilter().catch((error) => {
+      githubFilter(restQuery).catch((error) => {
         console.error(error);
         return [error.scriptFilterItem];
       }),
-      linearFilter().catch((error) => {
+      linearFilter(restQuery).catch((error) => {
         console.error(error);
         return [error.scriptFilterItem];
       }),
-      loomFilter().catch((error) => {
+      loomFilter(restQuery).catch((error) => {
         console.error(error);
         return [error.scriptFilterItem];
       }),
-      figmaFilter().catch((error) => {
+      figmaFilter(restQuery).catch((error) => {
         console.error(error);
         return [error.scriptFilterItem];
       }),
     ]);
 
-    return items
+    const allItems = items
       .flat()
-      .filter((item) => sourceFilter == null || item.source === sourceFilter)
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
+      .filter((item) => sourceFilter == null || item.source === sourceFilter);
+
+    return sortByDateDescending(allItems);
   } catch (error) {
     error.scriptFilterItem = {
       title: "Unknown error",
@@ -57,9 +59,10 @@ module.exports = rootFilter;
 if (require.main === module) {
   const query = process.argv[2];
   const sourceFilter =
-    query?.match(/^(?<filter>gh|li|vc|lm|fg)\b/)?.groups?.filter ?? null;
+    query?.match(/^(?<filter>gh|ln|vc|lm|fg)\b/)?.groups?.filter ?? null;
+  const restQuery = query?.replace(/^(?:gh|ln|vc|lm|fg)\b\s*/, "") ?? "";
 
-  rootFilter(sourceFilter)
+  rootFilter(sourceFilter, restQuery)
     .then((items) => {
       console.log(JSON.stringify({ items }));
     })

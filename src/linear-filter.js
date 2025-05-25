@@ -110,7 +110,7 @@ const fetchAllIssuesWithCache = withFilterCache(
   { cachePolicy: process.env.CACHE_POLICY }
 );
 
-async function linearFilter() {
+async function linearFilter(query) {
   try {
     const allIssues = await fetchAllIssuesWithCache();
 
@@ -130,7 +130,7 @@ async function linearFilter() {
         ),
         arg: issue.url,
         iconPath: "./src/icons/linear.png",
-        source: "li",
+        source: "ln",
         date: new Date(issue.updatedAt),
         uid: `linear-issue-${issue.identifier}`,
       })
@@ -140,18 +140,19 @@ async function linearFilter() {
       title: "Linear issues",
       arg: `https://linear.app/${linearTeam}`,
       iconPath: "./src/icons/linear.png",
-      source: "li",
+      source: "ln",
       uid: "linear-navigation",
     });
 
-    return wrapFilterResults(issueItems, navigationItem);
+    const allItems = wrapFilterResults(issueItems, navigationItem);
+    return filterByQuery(allItems, query);
   } catch (error) {
     error.scriptFilterItem = createErrorItem({
       title: "Linear issues",
       subtitle: "Configure Workflow with your Linear API Key",
       arg: `https://linear.app/${linearTeam}/settings/account/security/api-keys/new`,
       iconPath: "./src/icons/linear.png",
-      source: "li",
+      source: "ln",
       uid: "linear-error",
     });
     throw error;
@@ -162,5 +163,6 @@ module.exports = linearFilter;
 module.exports.fetchAllData = fetchAllIssues;
 
 if (require.main === module) {
-  executeFilterModule(linearFilter);
+  const query = process.argv[2];
+  executeFilterModule(() => linearFilter(query));
 }
