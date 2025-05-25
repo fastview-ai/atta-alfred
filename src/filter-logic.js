@@ -37,7 +37,7 @@ function formatRelativeDate(date) {
 
 // Common subtitle formatter using the "⮑ user • date" pattern
 function formatSubtitle(user, date, additionalInfo = []) {
-  const parts = ["\t⮑", user, "•", formatRelativeDate(date)];
+  const parts = [" ⮑", user, "•", formatRelativeDate(date)];
 
   // Insert additional info before the date
   if (additionalInfo.length > 0) {

@@ -291,6 +291,6 @@ module.exports = linearFilter;
 module.exports.fetchAllData = fetchAllIssues;
 
 if (require.main === module) {
-  const query = process.argv[2];
+  const query = process.argv.slice(2).join(" ");
   executeFilterModule(() => linearFilter(query));
 }
