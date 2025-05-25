@@ -1,16 +1,83 @@
 #!/usr/bin/env node
 
-const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
 function readPlist(filePath) {
   try {
-    // Use macOS plutil to convert plist to JSON
-    const jsonOutput = execSync(`plutil -convert json -o - "${filePath}"`, {
-      encoding: "utf8",
-    });
-    return JSON.parse(jsonOutput);
+    // Use Node.js built-in plist parsing
+    const plistContent = fs.readFileSync(filePath, "utf8");
+    
+    // Simple XML parser for plist format
+    const parseValue = (xmlStr, startTag, endTag) => {
+      const start = xmlStr.indexOf(startTag);
+      const end = xmlStr.indexOf(endTag, start);
+      if (start === -1 || end === -1) return null;
+      return xmlStr.substring(start + startTag.length, end).trim();
+    };
+    
+    const result = {};
+    
+    // Find the main dict content
+    const dictStart = plistContent.indexOf('<dict>');
+    const dictEnd = plistContent.lastIndexOf('</dict>');
+    if (dictStart === -1 || dictEnd === -1) return null;
+    
+    const dictContent = plistContent.substring(dictStart + 6, dictEnd);
+    
+    // Parse key-value pairs
+    const keyRegex = /<key>(.*?)<\/key>\s*<(string|integer|true|false|dict|array)(?:[^>]*)>(.*?)<\/\2>/gs;
+    let match;
+    
+    while ((match = keyRegex.exec(dictContent)) !== null) {
+      const key = match[1].trim();
+      const type = match[2];
+      const value = match[3].trim();
+      
+      switch (type) {
+        case 'string':
+          result[key] = value;
+          break;
+        case 'integer':
+          result[key] = parseInt(value, 10);
+          break;
+        case 'true':
+          result[key] = true;
+          break;
+        case 'false':
+          result[key] = false;
+          break;
+        case 'dict':
+          // For nested dicts, parse recursively
+          const nestedDict = {};
+          const nestedKeyRegex = /<key>(.*?)<\/key>\s*<(string|integer|true|false)(?:[^>]*)>(.*?)<\/\2>/gs;
+          let nestedMatch;
+          while ((nestedMatch = nestedKeyRegex.exec(value)) !== null) {
+            const nestedKey = nestedMatch[1].trim();
+            const nestedType = nestedMatch[2];
+            const nestedValue = nestedMatch[3].trim();
+            
+            switch (nestedType) {
+              case 'string':
+                nestedDict[nestedKey] = nestedValue;
+                break;
+              case 'integer':
+                nestedDict[nestedKey] = parseInt(nestedValue, 10);
+                break;
+              case 'true':
+                nestedDict[nestedKey] = true;
+                break;
+              case 'false':
+                nestedDict[nestedKey] = false;
+                break;
+            }
+          }
+          result[key] = nestedDict;
+          break;
+      }
+    }
+    
+    return result;
   } catch (error) {
     console.error(`Error reading plist file ${filePath}:`, error.message);
     return null;
