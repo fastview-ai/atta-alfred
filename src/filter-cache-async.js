@@ -4,6 +4,7 @@ const {
   spawnAsyncCache,
   writeToCache,
   readFromCache,
+  shouldThrottle,
 } = require("./data-cache-async");
 
 const isOffline = process.env.OFFLINE === "1";
@@ -78,6 +79,24 @@ if (require.main === module) {
 
   // Redirect console output to log file
   redirectConsoleToLog(log, `[${filterModuleName}] `);
+
+  // Check if cache file exists and was modified in the last 5 seconds
+  const THROTTLE_TIME = 5 * 1000; // 5 seconds
+
+  if (shouldThrottle(filterCacheName, THROTTLE_TIME)) {
+    const path = require("path");
+    const fs = require("fs");
+    const userDataDir = path.join(process.cwd(), "user-data");
+    const cacheFilePath = path.join(userDataDir, filterCacheName);
+    const timeSinceModified =
+      Date.now() - fs.statSync(cacheFilePath).mtime.getTime();
+    log(
+      `Skipping fetch - cache file modified ${Math.round(
+        timeSinceModified / 1000
+      )}s ago (throttle: ${THROTTLE_TIME / 1000}s)`
+    );
+    return;
+  }
 
   log("Fetch");
   fetchAllData()
