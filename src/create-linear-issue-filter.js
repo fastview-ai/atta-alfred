@@ -27,7 +27,7 @@ async function main() {
         items: [
           {
             uid: "error",
-            title: "New Linear issue",
+            title: "Create Linear issue",
             subtitle: "",
             valid: false,
           },
@@ -62,7 +62,7 @@ async function main() {
       items: [
         {
           uid: "error",
-          title: "New Linear issue",
+          title: "Create Linear issue",
           subtitle: "",
           valid: false,
         },
