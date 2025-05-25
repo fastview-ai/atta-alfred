@@ -119,6 +119,6 @@ module.exports = githubFilter;
 module.exports.fetchAllData = fetchAllPulls;
 
 if (require.main === module) {
-  const query = process.argv[2];
+  const query = process.argv.slice(2).join(" ");
   executeFilterModule(() => githubFilter(query));
 }

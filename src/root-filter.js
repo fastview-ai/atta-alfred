@@ -59,7 +59,7 @@ async function rootFilter(sourceFilter, restQuery) {
 module.exports = rootFilter;
 
 if (require.main === module) {
-  const query = process.argv[2];
+  const query = process.argv.slice(2).join(" ");
   const sourceFilter =
     query?.match(/^(?<filter>gh|ln|vc|lm|fg)\b/)?.groups?.filter ?? null;
   const restQuery = query?.replace(/^(?:gh|ln|vc|lm|fg)\b\s*/, "") ?? "";

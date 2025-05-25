@@ -17,13 +17,13 @@ function readPlist(filePath) {
   }
 }
 
-function generateEnvFile() {
+function generateEnvFile(quiet = false) {
   const workflowDir = process.cwd();
   const prefsPath = path.join(workflowDir, "prefs.plist");
   const infoPath = path.join(workflowDir, "info.plist");
   const envPath = path.join(workflowDir, ".env");
 
-  console.log("Reading plist files...");
+  if (!quiet) console.log("Reading plist files...");
 
   // Read prefs.plist (contains API keys)
   const prefs = readPlist(prefsPath);
@@ -64,19 +64,23 @@ function generateEnvFile() {
   // Write .env file
   fs.writeFileSync(envPath, envContent);
 
-  console.log("✅ .env file generated successfully!");
-  console.log(`📄 Location: ${envPath}`);
-  console.log(`📊 Total variables: ${Object.keys(envVars).length}`);
+  if (!quiet) {
+    console.log("✅ .env file generated successfully!");
+    console.log(`📄 Location: ${envPath}`);
+    console.log(`📊 Total variables: ${Object.keys(envVars).length}`);
 
-  // Show summary
-  console.log("\n📋 Variables included:");
-  console.log("   API Keys:", Object.keys(prefs).join(", "));
-  console.log("   Workflow vars:", Object.keys(info.variables).join(", "));
+    // Show summary
+    console.log("\n📋 Variables included:");
+    console.log("   API Keys:", Object.keys(prefs).join(", "));
+    console.log("   Workflow vars:", Object.keys(info.variables).join(", "));
+  }
 }
 
 // Run the script
 if (require.main === module) {
-  generateEnvFile();
+  const args = process.argv.slice(2);
+  const quiet = args.includes("--quiet") || args.includes("-q");
+  generateEnvFile(quiet);
 }
 
 module.exports = { generateEnvFile };

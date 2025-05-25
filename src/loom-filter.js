@@ -169,6 +169,6 @@ module.exports = loomFilter;
 module.exports.fetchAllData = fetchAllVideos;
 
 if (require.main === module) {
-  const query = process.argv[2];
+  const query = process.argv.slice(2).join(" ");
   executeFilterModule(() => loomFilter(query));
 }

@@ -93,8 +93,8 @@ async function createIssueMutation(
 
 async function main() {
   try {
-    const input = process.argv[2];
-
+    const input = process.argv.slice(2).join(" ");
+    
     if (!input) {
       console.error("Missing required input");
       console.log("Please provide an issue title");

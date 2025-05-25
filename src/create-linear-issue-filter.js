@@ -18,7 +18,7 @@ function formatSubtitle(params) {
 
 async function main() {
   try {
-    const input = process.argv[2] || "";
+    const input = process.argv.slice(2).join(" ");
 
     // Use the unified workflow processing
     const workflow = await utils.processWorkflow(input, linearToken);
