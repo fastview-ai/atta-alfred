@@ -7,7 +7,10 @@ function formatRelativeDate(date) {
 
   if (diffDays === 0) {
     const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-    if (diffHours <= 8) {
+    if (diffHours === 0) {
+      const diffMinutes = Math.floor(diffTime / (1000 * 60));
+      return diffMinutes < 2 ? "just now" : `${diffMinutes} minutes ago`;
+    } else if (diffHours <= 8) {
       return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`;
     }
     return "Today";
