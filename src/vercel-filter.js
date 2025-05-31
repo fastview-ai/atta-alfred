@@ -72,87 +72,101 @@ const fetchAllDeploymentsWithCache = withFilterCache(
 );
 
 async function vercelFilter(query) {
-  try {
-    const allDeployments = await fetchAllDeploymentsWithCache();
+    const navigationItems = [
+      createNavigationItem({
+        title: "Vercel deployments",
+        arg: `https://vercel.com/${vercelProject}/deployments`,
+        iconPath: "./src/icons/vercel.png",
+        source: "vc",
+        uid: "vercel-navigation",
+      }),
+      createNavigationItem({
+        title: "Vercel environment variables",
+        arg: `https://vercel.com/${vercelProject}/settings/environment-variables`,
+        iconPath: "./src/icons/vercel.png",
+        source: "vc",
+        uid: "vercel-env-navigation",
+      }),
+    ];
 
-    const deploymentItems = allDeployments
-      .sort((a, b) => {
-        // Sort by githubCommitRef first
-        const refA = a.meta?.githubCommitRef || "";
-        const refB = b.meta?.githubCommitRef || "";
-        if (refA !== refB) return refA.localeCompare(refB);
+    // Return early if query starts with "env"
+    if (query.trim().toLowerCase().startsWith("env")) {
+      return navigationItems;
+    }
 
-        // Then by createdAt (descending - newest first)
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      })
-      .filter((deployment, index, array) => {
-        // Keep first occurrence of each readyState per githubCommitRef
-        // And filter out deployments older than most recent READY state
-        if (index === 0) return true;
-        const prev = array[index - 1];
+    try {
+      const allDeployments = await fetchAllDeploymentsWithCache();
 
-        // Find most recent READY deployment
-        const readyDeployment = array.find(
-          (d) =>
-            d.meta?.githubCommitRef === deployment.meta?.githubCommitRef &&
-            d.readyState === "READY"
-        );
-        if (
-          readyDeployment &&
-          new Date(deployment.createdAt) < new Date(readyDeployment.createdAt)
-        ) {
-          return false;
-        }
+      const deploymentItems = allDeployments
+        .sort((a, b) => {
+          // Sort by githubCommitRef first
+          const refA = a.meta?.githubCommitRef || "";
+          const refB = b.meta?.githubCommitRef || "";
+          if (refA !== refB) return refA.localeCompare(refB);
 
-        return (
-          prev.meta?.githubCommitRef !== deployment.meta?.githubCommitRef ||
-          prev.readyState !== deployment.readyState
-        );
-      })
-      .map((deployment) =>
-        createFilterItem({
-          title: [
-            allDeployments.titlePrefix,
-            getEmoji(deployment.readyState),
-            deployment.meta?.githubCommitRef,
-            deployment.meta?.githubCommitMessage,
-          ]
-            .filter(Boolean)
-            .join(" "),
-          subtitle: formatSubtitle(
-            deployment.creator?.username || "Unknown",
-            deployment.createdAt
-          ),
-          arg: `https://${deployment.url}`,
-          iconPath: "./src/icons/vercel.png",
-          source: "vc",
-          date: new Date(deployment.createdAt),
-          uid: `vercel-deployment-${deployment.uid}`,
+          // Then by createdAt (descending - newest first)
+          return new Date(b.createdAt) - new Date(a.createdAt);
         })
-      );
+        .filter((deployment, index, array) => {
+          // Keep first occurrence of each readyState per githubCommitRef
+          // And filter out deployments older than most recent READY state
+          if (index === 0) return true;
+          const prev = array[index - 1];
 
-    const navigationItem = createNavigationItem({
-      title: "Vercel deployments",
-      arg: `https://vercel.com/${vercelProject}/deployments`,
-      iconPath: "./src/icons/vercel.png",
-      source: "vc",
-      uid: "vercel-navigation",
-    });
+          // Find most recent READY deployment
+          const readyDeployment = array.find(
+            (d) =>
+              d.meta?.githubCommitRef === deployment.meta?.githubCommitRef &&
+              d.readyState === "READY"
+          );
+          if (
+            readyDeployment &&
+            new Date(deployment.createdAt) < new Date(readyDeployment.createdAt)
+          ) {
+            return false;
+          }
 
-    const allItems = wrapFilterResults(deploymentItems, navigationItem);
-    return filterByWords(allItems, query);
-  } catch (error) {
-    logError(error, "vercelFilter");
-    error.scriptFilterItem = createErrorItem({
-      title: "Vercel deployments",
-      subtitle: "Configure Workflow with your Vercel API Key",
-      arg: "https://vercel.com/account/settings/tokens",
-      iconPath: "./src/icons/vercel.png",
-      source: "vc",
-      uid: "vercel-error",
-    });
-    throw error;
-  }
+          return (
+            prev.meta?.githubCommitRef !== deployment.meta?.githubCommitRef ||
+            prev.readyState !== deployment.readyState
+          );
+        })
+        .map((deployment) =>
+          createFilterItem({
+            title: [
+              allDeployments.titlePrefix,
+              getEmoji(deployment.readyState),
+              deployment.meta?.githubCommitRef,
+              deployment.meta?.githubCommitMessage,
+            ]
+              .filter(Boolean)
+              .join(" "),
+            subtitle: formatSubtitle(
+              deployment.creator?.username || "Unknown",
+              deployment.createdAt
+            ),
+            arg: `https://${deployment.url}`,
+            iconPath: "./src/icons/vercel.png",
+            source: "vc",
+            date: new Date(deployment.createdAt),
+            uid: `vercel-deployment-${deployment.uid}`,
+          })
+        );
+
+      const allItems = wrapFilterResults(deploymentItems, ...navigationItems);
+      return filterByWords(allItems, query);
+    } catch (error) {
+      logError(error, "vercelFilter");
+      error.scriptFilterItem = createErrorItem({
+        title: "Vercel deployments",
+        subtitle: "Configure Workflow with your Vercel API Key",
+        arg: "https://vercel.com/account/settings/tokens",
+        iconPath: "./src/icons/vercel.png",
+        source: "vc",
+        uid: "vercel-error",
+      });
+      throw error;
+    }
 }
 
 module.exports = vercelFilter;

@@ -117,6 +117,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>VC-ENV-FILTER-123456789ABC</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>F729AB1D-DB8A-486E-86B4-DE0E01092BA4</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 	</dict>
 	<key>createdby</key>
 	<string>Omar Chehab (@oac)</string>
@@ -428,11 +441,79 @@
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<true/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>2</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>fv vc env</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading... (~5s)</string>
+				<key>script</key>
+				<string>${NODE_PATH:-node} ./src/vercel-get-env.js "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string>Download Vercel env vars</string>
+				<key>type</key>
+				<integer>11</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>VC-ENV-FILTER-123456789ABC</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>autopaste</key>
+				<false/>
+				<key>clipboardtext</key>
+				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<false/>
+				<key>transient</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.clipboard</string>
+			<key>uid</key>
+			<string>F729AB1D-DB8A-486E-86B4-DE0E01092BA4</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string># Fastview.ai Alfred Workflow
 
-An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull requests, Vercel deployments, and Figma comments.
+An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull requests, Vercel deployments+secrets, and Figma comments.
 
 ## Required Configuration
 
@@ -483,6 +564,11 @@ This workflow uses Node.js for script execution. By default it uses `node` comma
 - `fv vc` - Searches Vercel deployments by branch name or title
 - `fv fg` - Searches Figma comments by content
 - `fv lm` - Searches Loom videos by title
+
+### Environment Variables
+- `fv vc env &lt;prod|dev|preview&gt;` - Copies environment variables from Vercel formatted for your .env file
+
+The environment variables are formatted as a .env file and copied to your clipboard.
 
 ### Issue Creation
 
@@ -580,6 +666,20 @@ Created by Omar Chehab (@oac)</string>
 			<real>625</real>
 			<key>ypos</key>
 			<real>235</real>
+		</dict>
+		<key>F729AB1D-DB8A-486E-86B4-DE0E01092BA4</key>
+		<dict>
+			<key>xpos</key>
+			<real>280</real>
+			<key>ypos</key>
+			<real>650</real>
+		</dict>
+		<key>VC-ENV-FILTER-123456789ABC</key>
+		<dict>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>650</real>
 		</dict>
 	</dict>
 	<key>userconfigurationconfig</key>
@@ -735,7 +835,7 @@ Open Loom -&gt; dev tools -&gt; network -&gt; graphql -&gt; cookies -&gt; copy c
 		<string>NODE_PATH</string>
 	</array>
 	<key>version</key>
-	<string>7</string>
+	<string>8</string>
 	<key>webaddress</key>
 	<string>https://github.com/fastview-ai/fv-alfred</string>
 </dict>

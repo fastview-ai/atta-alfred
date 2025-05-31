@@ -1,6 +1,6 @@
 # Fastview.ai Alfred Workflow
 
-An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull requests, Vercel deployments, and Figma comments.
+An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull requests, Vercel deployments+secrets, and Figma comments.
 
 ## Required Configuration
 
@@ -51,6 +51,11 @@ This workflow uses Node.js for script execution. By default it uses `node` comma
 - `fv vc` - Searches Vercel deployments by branch name or title
 - `fv fg` - Searches Figma comments by content
 - `fv lm` - Searches Loom videos by title
+
+### Environment Variables
+- `fv vc env <prod|dev|preview>` - Copies environment variables from Vercel formatted for your .env file
+
+The environment variables are formatted as a .env file and copied to your clipboard.
 
 ### Issue Creation
 
