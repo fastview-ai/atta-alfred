@@ -9,14 +9,14 @@ const {
 const vercelToken = process.env.VERCEL_API_KEY;
 const vercelProject = process.env.VERCEL_PROJECT;
 
-async function fetchEnvironmentVariables(projectId, targetEnv) {
+async function fetchEnvironmentVariables(team, project, targetEnv) {
   if (!vercelToken) {
     throw new Error("Missing VERCEL_API_KEY env var");
   }
 
   // Fetch all environment variables first
   const allEnvs = await fetch(
-    new URL(`https://api.vercel.com/v10/projects/${projectId}/env`),
+    `https://api.vercel.com/v10/projects/${project}/env?slug=${team}`,
     {
       headers: { Authorization: `Bearer ${vercelToken}` },
     }
@@ -68,9 +68,7 @@ async function fetchEnvironmentVariables(projectId, targetEnv) {
       }
 
       const response = await fetch(
-        new URL(
-          `https://api.vercel.com/v10/projects/${projectId}/env/${env.id}`
-        ),
+        `https://api.vercel.com/v10/projects/${project}/env/${env.id}?slug=${team}`,
         {
           headers: { Authorization: `Bearer ${vercelToken}` },
         }
@@ -155,14 +153,13 @@ async function vercelGetEnv(query) {
       environmentDisplay = "preview";
     }
 
-    // Extract project ID from VERCEL_PROJECT (format: owner/project-name)
-    const projectParts = vercelProject?.split("/");
-    if (!projectParts || projectParts.length !== 2) {
+    // Extract team and project from VERCEL_PROJECT (format: owner/project-name)
+    const [team, project] = vercelProject?.split("/") || [];
+    if (!team || !project) {
       throw new Error(
         "Invalid VERCEL_PROJECT format. Expected 'owner/project-name'"
       );
     }
-    const projectId = projectParts[1];
 
     const environments = [
       { key: "production", display: "Production", icon: "🚀" },
@@ -175,7 +172,11 @@ async function vercelGetEnv(query) {
       await Promise.all(
         environments.map(async (env) => {
           try {
-            const vars = await fetchEnvironmentVariables(projectId, env.key);
+            const vars = await fetchEnvironmentVariables(
+              team,
+              project,
+              env.key
+            );
             return [env.key, vars];
           } catch (error) {
             logError(error, "vercelGetEnv");
