@@ -121,7 +121,27 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
+				<string>8329808E-E6C5-4F4D-A734-17F42BE4F405</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
 				<string>F729AB1D-DB8A-486E-86B4-DE0E01092BA4</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>7450A68A-1A4E-4D98-AA25-B444D072E38F</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -425,6 +445,21 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>soundname</key>
+				<string>Hero</string>
+				<key>systemsound</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.playsound</string>
+			<key>uid</key>
+			<string>8329808E-E6C5-4F4D-A734-17F42BE4F405</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>autopaste</key>
 				<true/>
 				<key>clipboardtext</key>
@@ -508,6 +543,27 @@
 			<string>F729AB1D-DB8A-486E-86B4-DE0E01092BA4</string>
 			<key>version</key>
 			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<true/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+				<key>title</key>
+				<string>Copied .env to clipboard</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>7450A68A-1A4E-4D98-AA25-B444D072E38F</string>
+			<key>version</key>
+			<integer>1</integer>
 		</dict>
 	</array>
 	<key>readme</key>
@@ -638,6 +694,20 @@ Created by Omar Chehab (@oac)</string>
 			<real>30</real>
 			<key>ypos</key>
 			<real>15</real>
+		</dict>
+		<key>7450A68A-1A4E-4D98-AA25-B444D072E38F</key>
+		<dict>
+			<key>xpos</key>
+			<real>280</real>
+			<key>ypos</key>
+			<real>755</real>
+		</dict>
+		<key>8329808E-E6C5-4F4D-A734-17F42BE4F405</key>
+		<dict>
+			<key>xpos</key>
+			<real>280</real>
+			<key>ypos</key>
+			<real>545</real>
 		</dict>
 		<key>894F0AE7-97DA-4007-9903-CE64D84907B5</key>
 		<dict>
