@@ -28,7 +28,7 @@ async function main() {
       const output = {
         items: [
           {
-            uid: "error",
+            // uid: "linear-error",
             title: "Create Linear issue",
             subtitle: "",
             valid: false,

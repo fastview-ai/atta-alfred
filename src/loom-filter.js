@@ -139,7 +139,7 @@ async function loomFilter(query) {
         iconPath: "./src/icons/loom.png",
         source: "lm",
         date: new Date(node.createdAt),
-        uid: `loom-video-${node.id}`,
+        // uid: `loom-video-${node.id}`,
       })
     );
 
@@ -148,7 +148,7 @@ async function loomFilter(query) {
       arg: "https://www.loom.com/looms/videos",
       iconPath: "./src/icons/loom.png",
       source: "lm",
-      uid: "loom-navigation",
+      // uid: "loom-navigation",
     });
 
     const allItems = wrapFilterResults(videoItems, navigationItem);
@@ -161,7 +161,7 @@ async function loomFilter(query) {
       arg: "https://www.loom.com/my-videos",
       iconPath: "./src/icons/loom.png",
       source: "lm",
-      uid: "loom-error",
+      // uid: "loom-error",
     });
     throw error;
   }

@@ -78,14 +78,14 @@ async function vercelFilter(query) {
         arg: `https://vercel.com/${vercelProject}/deployments`,
         iconPath: "./src/icons/vercel.png",
         source: "vc",
-        uid: "vercel-navigation",
+        // uid: "vercel-navigation",
       }),
       createNavigationItem({
         title: "Vercel environment variables",
         arg: `https://vercel.com/${vercelProject}/settings/environment-variables`,
         iconPath: "./src/icons/vercel.png",
         source: "vc",
-        uid: "vercel-env-navigation",
+        // uid: "vercel-env-navigation",
       }),
     ];
 
@@ -149,7 +149,7 @@ async function vercelFilter(query) {
             iconPath: "./src/icons/vercel.png",
             source: "vc",
             date: new Date(deployment.createdAt),
-            uid: `vercel-deployment-${deployment.uid}`,
+            // uid: `vercel-deployment-${deployment.uid}`,
           })
         );
 
@@ -163,7 +163,7 @@ async function vercelFilter(query) {
         arg: "https://vercel.com/account/settings/tokens",
         iconPath: "./src/icons/vercel.png",
         source: "vc",
-        uid: "vercel-error",
+        // uid: "vercel-error",
       });
       throw error;
     }

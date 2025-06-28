@@ -50,7 +50,7 @@ async function rootFilter(sourceFilter, restQuery) {
       },
       source: "root",
       date: new Date(),
-      uid: "root-error",
+      // uid: "root-error",
     };
     throw error;
   }
