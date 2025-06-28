@@ -46,7 +46,7 @@ async function rootFilter(sourceFilter, restQuery) {
       title: "Error occurred",
       subtitle: error.message,
       icon: {
-        path: "./src/icons/fastview.png",
+        path: "./src/icons/atta.png",
       },
       source: "root",
       date: new Date(),

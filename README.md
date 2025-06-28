@@ -1,6 +1,6 @@
-# Fastview.ai Alfred Workflow
+# Atta Alfred Workflow
 
-An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull requests, Vercel deployments+secrets, and Figma comments.
+An Alfred workflow for quick access to Atta's Linear issues, GitHub pull requests, Vercel deployments+secrets, and Figma comments.
 
 ## Required Configuration
 
@@ -10,15 +10,15 @@ An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull re
   - https://github.com/settings/tokens
 
 - **Linear Personal API Key**:
-  - Generate an API Key from **Linear > Settings > Account > Security & Access > Personal API Key**
+  - Generate an API Key from **Linear &gt; Settings &gt; Account &gt; Security &amp; Access &gt; Personal API Key**
   - https://linear.app/fastview/settings/account/security/api-keys/new
 
 - **Vercel Token**:
-  - Generate a token from **Vercel > Settings > Tokens**
+  - Generate a token from **Vercel &gt; Settings &gt; Tokens**
   - https://vercel.com/account/settings/tokens
 
 - **Figma Personal Access Token**:
-  - Generate a personal access token **Figma > Profile / Settings > Security tab > Personal Access Token**
+  - Generate a personal access token **Figma &gt; Profile / Settings &gt; Security tab &gt; Personal Access Token**
   - https://figma.com/
 
 - [experimental] **Loom Cookie**:
@@ -36,7 +36,7 @@ Only select repositories
 ✅ fastview-ai/sparrow-ml
 
 Repository permissions
-✅ Pull requests > Read-only
+✅ Pull requests &gt; Read-only
 
 ### Development
 
@@ -53,13 +53,13 @@ This workflow uses Node.js for script execution. By default it uses `node` comma
 - `fv lm` - Searches Loom videos by title
 
 ### Environment Variables
-- `fv vc env <prod|dev|preview>` - Copies environment variables from Vercel formatted for your .env file
+- `fv vc env &lt;prod|dev|preview&gt;` - Copies environment variables from Vercel formatted for your .env file
 
 The environment variables are formatted as a .env file and copied to your clipboard.
 
 ### Issue Creation
 
-- `fv <title> -team -project -assignee -priority` - Create a new Linear issue and posts a system notification with the new ticket number
+- `fv &lt;title&gt; -team -project -assignee -priority` - Create a new Linear issue and posts a system notification with the new ticket number
   - Example: `fv Fix authentication bug -p1`
   - Example: `fv -eng -canvas -oac -p1 Fix authentication bug`
 

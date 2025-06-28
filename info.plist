@@ -3,11 +3,44 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>ai.fastview.alfred</string>
+	<string>app.atta.alfred</string>
 	<key>category</key>
 	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
+		<key>1C5F8B22-0203-411F-B1B9-02550071D9FF</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>8329808E-E6C5-4F4D-A734-17F42BE4F405</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>F729AB1D-DB8A-486E-86B4-DE0E01092BA4</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>7450A68A-1A4E-4D98-AA25-B444D072E38F</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>26CD270C-55DD-42F2-B9A7-C07BC43D627C</key>
 		<array>
 			<dict>
@@ -102,7 +135,7 @@
 				<false/>
 			</dict>
 		</array>
-		<key>VC-ENV-FILTER-123456789ABC</key>
+		<key>519A2571-634A-48A7-B856-28343CC6972A</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
@@ -135,15 +168,51 @@
 				<false/>
 			</dict>
 		</array>
+		<key>66DDC834-30F1-4D0E-9526-E2D74B996E4E</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>32AC4E08-866E-4724-B41A-AAC8167C415C</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>8ACC07FF-551F-4644-8EB0-7366A4557AC1</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>D7001DE8-27F5-41C0-93B3-D8282B029029</string>
+				<key>modifiers</key>
+				<integer>1048576</integer>
+				<key>modifiersubtext</key>
+				<string>Copy to clipboard</string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>B9C50AEC-5EF8-40AE-A48C-7A44E6F8ACE9</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 	</dict>
 	<key>createdby</key>
 	<string>Omar Chehab (@oac)</string>
 	<key>description</key>
-	<string>Company workflows for GitHub and Linear</string>
+	<string>Company workflows for GitHub, Linear, Vercel, Figma, and Loom</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>Fastview.ai</string>
+	<string>Atta</string>
 	<key>objects</key>
 	<array>
 		<dict>
@@ -182,7 +251,7 @@
 				<key>subtext</key>
 				<string>The analytics platform built for humans.</string>
 				<key>title</key>
-				<string>Fastview</string>
+				<string>Atta</string>
 				<key>type</key>
 				<integer>11</integer>
 				<key>withspace</key>
@@ -232,6 +301,55 @@
 			<string>alfred.workflow.output.clipboard</string>
 			<key>uid</key>
 			<string>B9C50AEC-5EF8-40AE-A48C-7A44E6F8ACE9</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>2</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>at</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading...</string>
+				<key>script</key>
+				<string>${NODE_PATH:-node} ./src/root-filter.js "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>The analytics platform built for humans.</string>
+				<key>title</key>
+				<string>Atta</string>
+				<key>type</key>
+				<integer>11</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>8ACC07FF-551F-4644-8EB0-7366A4557AC1</string>
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
@@ -373,6 +491,56 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>at</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string></string>
+				<key>script</key>
+				<string>${NODE_PATH:-node} ./src/create-linear-issue-filter.js "$1"
+</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string>Create Linear issue</string>
+				<key>type</key>
+				<integer>11</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>66DDC834-30F1-4D0E-9526-E2D74B996E4E</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>lastpathcomponent</key>
 				<false/>
 				<key>onlyshowifquerypopulated</key>
@@ -405,25 +573,6 @@
 			<string>8329808E-E6C5-4F4D-A734-17F42BE4F405</string>
 			<key>version</key>
 			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>autopaste</key>
-				<true/>
-				<key>clipboardtext</key>
-				<string>{query}</string>
-				<key>ignoredynamicplaceholders</key>
-				<false/>
-				<key>transient</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.clipboard</string>
-			<key>uid</key>
-			<string>894F0AE7-97DA-4007-9903-CE64D84907B5</string>
-			<key>version</key>
-			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -470,7 +619,75 @@
 			<key>type</key>
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
-			<string>VC-ENV-FILTER-123456789ABC</string>
+			<string>1C5F8B22-0203-411F-B1B9-02550071D9FF</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>autopaste</key>
+				<true/>
+				<key>clipboardtext</key>
+				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<false/>
+				<key>transient</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.clipboard</string>
+			<key>uid</key>
+			<string>894F0AE7-97DA-4007-9903-CE64D84907B5</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<true/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>2</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>at vc env</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading... (~15s)</string>
+				<key>script</key>
+				<string>${NODE_PATH:-node} ./src/vercel-get-env.js "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string>Download Vercel env vars</string>
+				<key>type</key>
+				<integer>11</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>519A2571-634A-48A7-B856-28343CC6972A</string>
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
@@ -516,9 +733,9 @@
 		</dict>
 	</array>
 	<key>readme</key>
-	<string># Fastview.ai Alfred Workflow
+	<string># Atta Alfred Workflow
 
-An Alfred workflow for quick access to Fastview.ai Linear issues, GitHub pull requests, Vercel deployments+secrets, and Figma comments.
+An Alfred workflow for quick access to Atta's Linear issues, GitHub pull requests, Vercel deployments+secrets, and Figma comments.
 
 ## Required Configuration
 
@@ -588,6 +805,13 @@ The environment variables are formatted as a .env file and copied to your clipbo
 Created by Omar Chehab (@oac)</string>
 	<key>uidata</key>
 	<dict>
+		<key>1C5F8B22-0203-411F-B1B9-02550071D9FF</key>
+		<dict>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>545</real>
+		</dict>
 		<key>22299E4C-2DA4-4270-90D0-BC55053DD221</key>
 		<dict>
 			<key>xpos</key>
@@ -630,6 +854,20 @@ Created by Omar Chehab (@oac)</string>
 			<key>ypos</key>
 			<real>15</real>
 		</dict>
+		<key>519A2571-634A-48A7-B856-28343CC6972A</key>
+		<dict>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>650</real>
+		</dict>
+		<key>66DDC834-30F1-4D0E-9526-E2D74B996E4E</key>
+		<dict>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>395</real>
+		</dict>
 		<key>7450A68A-1A4E-4D98-AA25-B444D072E38F</key>
 		<dict>
 			<key>xpos</key>
@@ -650,6 +888,13 @@ Created by Omar Chehab (@oac)</string>
 			<real>625</real>
 			<key>ypos</key>
 			<real>550</real>
+		</dict>
+		<key>8ACC07FF-551F-4644-8EB0-7366A4557AC1</key>
+		<dict>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>120</real>
 		</dict>
 		<key>B9C50AEC-5EF8-40AE-A48C-7A44E6F8ACE9</key>
 		<dict>
@@ -676,13 +921,6 @@ Created by Omar Chehab (@oac)</string>
 		<dict>
 			<key>xpos</key>
 			<real>280</real>
-			<key>ypos</key>
-			<real>650</real>
-		</dict>
-		<key>VC-ENV-FILTER-123456789ABC</key>
-		<dict>
-			<key>xpos</key>
-			<real>30</real>
 			<key>ypos</key>
 			<real>650</real>
 		</dict>
@@ -842,6 +1080,6 @@ Open Loom -&gt; dev tools -&gt; network -&gt; graphql -&gt; cookies -&gt; copy c
 	<key>version</key>
 	<string>8</string>
 	<key>webaddress</key>
-	<string>https://github.com/fastview-ai/fv-alfred</string>
+	<string>https://github.com/fastview-ai/atta-alfred</string>
 </dict>
 </plist>
