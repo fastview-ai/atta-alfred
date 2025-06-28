@@ -230,7 +230,7 @@ async function vercelGetEnv(query) {
       subtitle: "Configure Workflow with your Vercel API Key",
       arg: "https://vercel.com/account/settings/tokens",
       iconPath: "./src/icons/vercel.png",
-      uid: "vercel-env-error",
+      // uid: "vercel-env-error",
     });
 
     return [errorItem];

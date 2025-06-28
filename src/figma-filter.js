@@ -81,7 +81,7 @@ async function figmaFilter(query) {
           iconPath: "./src/icons/figma.png",
           source: "fg",
           date: new Date(comment.created_at),
-          uid: `figma-comment-${comment.id}`,
+          // uid: `figma-comment-${comment.id}`,
         })
       );
 
@@ -90,7 +90,7 @@ async function figmaFilter(query) {
       arg: `https://www.figma.com/file/${figmaFile}`,
       iconPath: "./src/icons/figma.png",
       source: "fg",
-      uid: "figma-navigation",
+      // uid: "figma-navigation",
     });
 
     const allItems = wrapFilterResults(commentItems, navigationItem);
@@ -103,7 +103,7 @@ async function figmaFilter(query) {
       arg: "https://www.figma.com/developers/api#access-tokens",
       iconPath: "./src/icons/figma.png",
       source: "fg",
-      uid: "figma-error",
+      // uid: "figma-error",
     });
     throw error;
   }

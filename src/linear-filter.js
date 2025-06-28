@@ -259,7 +259,7 @@ async function linearFilter(query) {
         iconPath: "./src/icons/linear.png",
         source: "ln",
         date: new Date(issue.updatedAt),
-        uid: `linear-issue-${issue.identifier}`,
+        // uid: `linear-issue-${issue.identifier}`,
       })
     );
 
@@ -268,7 +268,7 @@ async function linearFilter(query) {
       arg: `https://linear.app/${linearTeam}`,
       iconPath: "./src/icons/linear.png",
       source: "ln",
-      uid: "linear-navigation",
+      // uid: "linear-navigation",
     });
 
     const allItems = wrapFilterResults(issueItems, navigationItem);
@@ -282,7 +282,7 @@ async function linearFilter(query) {
       arg: "https://linear.app/settings/api",
       iconPath: "./src/icons/linear.png",
       source: "ln",
-      uid: "linear-error",
+      // uid: "linear-error",
     });
     throw error;
   }
