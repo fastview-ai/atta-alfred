@@ -37,6 +37,54 @@ function findMatch(word, collection, matcher) {
   return collection.find((item) => matcher(item, word));
 }
 
+// Enhanced matching function that prefers shorter/more specific matches
+function findBestMatch(word, collection, getMatchableStrings) {
+  if (!word || !collection) return null;
+  
+  const searchTerm = word.substring(1); // Remove the "-" prefix
+  const sanitizedSearchTerm = sanitise(searchTerm);
+  
+  // Find all items that have at least one matchable string
+  const candidatesWithMatches = collection
+    .map(item => {
+      const matchableStrings = getMatchableStrings(item).filter(Boolean);
+      const matches = matchableStrings.map(str => ({
+        original: str,
+        sanitized: sanitise(str),
+        isExact: sanitise(str) === sanitizedSearchTerm,
+        isFuzzy: fuzzyMatch(str, searchTerm)
+      }));
+      
+      return {
+        item,
+        matches: matches.filter(m => m.isExact || m.isFuzzy),
+        hasExactMatch: matches.some(m => m.isExact),
+        shortestMatchLength: Math.min(...matches.filter(m => m.isExact || m.isFuzzy).map(m => m.original.length))
+      };
+    })
+    .filter(candidate => candidate.matches.length > 0);
+  
+  if (candidatesWithMatches.length === 0) {
+    return null;
+  }
+  
+  // Prioritize: exact matches first, then by shortest match length, then alphabetically
+  return candidatesWithMatches.sort((a, b) => {
+    // Exact matches always win
+    if (a.hasExactMatch && !b.hasExactMatch) return -1;
+    if (!a.hasExactMatch && b.hasExactMatch) return 1;
+    
+    // If both have exact matches or neither do, prefer shorter matches
+    const lengthDiff = a.shortestMatchLength - b.shortestMatchLength;
+    if (lengthDiff !== 0) return lengthDiff;
+    
+    // Finally, sort alphabetically for consistent behavior
+    const aName = getMatchableStrings(a.item)[0] || '';
+    const bName = getMatchableStrings(b.item)[0] || '';
+    return aName.localeCompare(bName);
+     })[0].item;
+}
+
 // Create common matchers for all parameter types
 const matchers = {
   teams: (team, word) =>
@@ -268,14 +316,26 @@ function processParameters(paramWords, metadata) {
     for (let i = results.unmatched.length - 1; i >= 0; i--) {
       const word = results.unmatched[i];
 
-      // Special case for projects which need teamId
-      const matcherFn =
-        key === "projects"
-          ? (project, word) => matcher(project, word, results.teamId)
-          : matcher;
-
-      const collection = key === "priorities" ? priorities : metadata?.[key];
-      const match = findMatch(word, collection, matcherFn);
+      let match;
+      
+      // Use enhanced matching for all parameter types
+      if (key === "projects") {
+        // Filter projects by team if teamId is specified
+        const filteredProjects = (metadata?.projects || []).filter(project => 
+          results.teamId == null || project.teams?.nodes?.some((team) => team.id === results.teamId)
+        );
+        match = findBestMatch(word, filteredProjects, (project) => [project.name]);
+      } else if (key === "teams") {
+        match = findBestMatch(word, metadata?.teams || [], (team) => [team.name, team.key]);
+      } else if (key === "users") {
+        match = findBestMatch(word, metadata?.users || [], (user) => [
+          user.name, 
+          user.displayName, 
+          user.email?.split("@")[0]
+        ]);
+      } else if (key === "priorities") {
+        match = findBestMatch(word, priorities, (priority) => [priority.label]);
+      }
 
       if (match) {
         setters[key](match);
