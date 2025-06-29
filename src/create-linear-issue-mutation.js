@@ -1,6 +1,6 @@
 const { logError, logFetchResponseError } = require("./error-logger");
 const { execSync } = require("child_process");
-const { filterCacheAsync } = require("./filter-cache-async");
+const { readFromCache, writeToCache } = require("./filter-cache-async");
 const utils = require("./create-linear-issue-logic");
 
 const linearToken = process.env.LINEAR_API_KEY;
@@ -53,11 +53,27 @@ async function createIssueMutation(
             issueCreate(input: $input) {
               success
               issue {
-                id
+                title
                 identifier
-                url
+                state {
+                  name
+                }
+                updatedAt
                 assignee {
+                  id
+                  name
                   displayName
+                }
+                url
+                priority
+                team {
+                  id
+                  key
+                  name
+                }
+                project {
+                  id
+                  name
                 }
               }
             }
@@ -75,8 +91,6 @@ async function createIssueMutation(
     }),
   });
 
-  filterCacheAsync("linear-filter", "linear-cache.json");
-
   if (!response?.ok) {
     await logFetchResponseError(response, "createLinearIssue");
     throw new Error("Fetch Error: " + (response.statusText ?? "unknown"));
@@ -88,7 +102,22 @@ async function createIssueMutation(
     throw new Error(errors[0].message);
   }
 
-  return data.issueCreate.issue;
+  const newIssue = data.issueCreate.issue;
+
+  // Immediately append the new issue to the cache
+  if (!dryRun && newIssue) {
+    try {
+      const existingCache = readFromCache("linear-cache.json") || [];
+      // Add the new issue to the beginning of the cache (most recent first)
+      const updatedCache = [newIssue, ...existingCache];
+      writeToCache("linear-cache.json", updatedCache);
+    } catch (error) {
+      // Don't fail the entire operation if cache update fails
+      logError(error, "updateCacheAfterCreate");
+    }
+  }
+
+  return newIssue;
 }
 
 async function main() {

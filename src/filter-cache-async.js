@@ -26,15 +26,9 @@ function withFilterCache(
       if (cachePolicy === "cache-only") {
         // cache policy cache only means we always eagerly use the cache
         // thus returning stale results
-      const staleResult = readFromCache(cacheFile);
-      if (!staleResult.isStale) {
+        const staleResult = readFromCache(cacheFile);
         filterCacheAsync(filterModule, cacheFile);
         return staleResult;
-      }
-
-        const result = await filterFn();
-        writeToCache(cacheFile, result);
-        return result;
       } else if (cachePolicy === "offline-only") {
         // cache policy offline only means we will only use the cache when offline
         const result = await filterFn();

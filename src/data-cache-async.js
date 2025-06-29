@@ -116,14 +116,6 @@ function readFromCache(cacheFile) {
       if (!Array.isArray(cached) || cached.length === 0) {
         return null;
       }
-
-      // Check if cache is stale (hasn't been touched in a while)
-      const stats = fs.statSync(cachePath);
-      const timeSinceModified = Date.now() - stats.mtime.getTime();
-      const STALE_THRESHOLD = 60 * 60 * 1000; // ms
-      cached.isStale = timeSinceModified > STALE_THRESHOLD;
-      cached.titlePrefix = cached.isStale ? "📴 " : "";
-
       return cached;
     }
     return null;
