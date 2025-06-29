@@ -9,6 +9,7 @@ if [[ " $@ " =~ " -h " ]] || [[ " $@ " =~ " --help " ]]; then
   echo "  ./scripts/run.sh vc env <prod|dev|preview>  Get Vercel environment variables"
   echo "  ./scripts/run.sh fg <query>  Search Figma comments"
   echo "  ./scripts/run.sh lm <query>  Search Loom videos"
+  echo "  ./scripts/run.sh cr <query>  Search Cursor usage analytics"
   exit 1
 fi
 

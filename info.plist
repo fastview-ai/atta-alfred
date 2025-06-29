@@ -735,7 +735,7 @@
 	<key>readme</key>
 	<string># Atta Alfred Workflow
 
-An Alfred workflow for quick access to Atta's Linear issues, GitHub pull requests, Vercel deployments+secrets, and Figma comments.
+An Alfred workflow for quick access to Atta's Linear issues, GitHub pull requests, Vercel deployments+secrets, Figma comments, and Cursor usage analytics.
 
 ## Required Configuration
 
@@ -759,6 +759,10 @@ An Alfred workflow for quick access to Atta's Linear issues, GitHub pull request
 - [experimental] **Loom Cookie**:
   - Copy the connect.sid value from Chrome Dev Tools Network tab, unsure what the expiry is on this.
   - https://loom.com/
+
+- [experimental] **Cursor Session Token**:
+  - Copy the WorkosCursorSessionToken value from Chrome Dev Tools Network tab when browsing Cursor Dashboard
+  - https://www.cursor.com/dashboard
 
 ### GitHub Fine Grained Token (Alternative steps)
 
@@ -785,7 +789,8 @@ This workflow uses Node.js for script execution. By default it uses `node` comma
 - `aa gh` - Searches GitHub pull requests by branch name or title
 - `aa vc` - Searches Vercel deployments by branch name or title
 - `aa fg` - Searches Figma comments by content
-- `aa lm` - Searches Loom videos by title
+- `aa lm` - [Experimental] Searches Loom videos by title
+- `aa cr` - [Experimental] Shows Cursor usage analytics aggregated into usage sprints
 
 ### Environment Variables
 - `aa vc env &lt;prod|dev|preview&gt;` - Copies environment variables from Vercel formatted for your .env file
@@ -1049,6 +1054,31 @@ Open Loom -&gt; dev tools -&gt; network -&gt; graphql -&gt; cookies -&gt; copy c
 			<key>variable</key>
 			<string>LOOM_CONNECT_SID</string>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>[Experimental] Cursor doesn't have a public API yet so we can call their web app's API using your browser session token.
+
+Open Cursor Dashboard -&gt; dev tools -&gt; network -&gt; API calls -&gt; cookies -&gt; copy WorkosCursorSessionToken's value
+
+✅ WorkosCursorSessionToken</string>
+			<key>label</key>
+			<string>Cursor Session Token</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>CURSOR_SESSION_TOKEN</string>
+		</dict>
 	</array>
 	<key>variables</key>
 	<dict>
@@ -1070,6 +1100,10 @@ Open Loom -&gt; dev tools -&gt; network -&gt; graphql -&gt; cookies -&gt; copy c
 		<string>0</string>
 		<key>VERCEL_PROJECT</key>
 		<string>fastviewai/sparrow-ml</string>
+		<key>CURSOR_TEAM_ID</key>
+		<string>2814593</string>
+		<key>CURSOR_USER_ID</key>
+		<string>188358357</string>
 	</dict>
 	<key>variablesdontexport</key>
 	<array>

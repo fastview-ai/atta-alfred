@@ -1,11 +1,18 @@
 const { logError } = require("./error-logger");
 
 // Common date formatting function used across all filters
-function formatRelativeDate(date) {
+function formatRelativeDate(date, includeTime = false) {
   const now = new Date();
   const inputDate = new Date(date);
   const diffTime = now - inputDate;
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  const timeStr = includeTime
+    ? ` @ ${inputDate.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      })}`
+    : "";
 
   if (diffDays === 0) {
     const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
@@ -15,11 +22,11 @@ function formatRelativeDate(date) {
     } else if (diffHours <= 8) {
       return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`;
     }
-    return "Today";
+    return `Today${timeStr}`;
   } else if (diffDays === 1) {
-    return "Yesterday";
+    return `Yesterday${timeStr}`;
   } else if (diffDays < 7) {
-    return `${diffDays} days ago`;
+    return `${diffDays} days ago${timeStr}`;
   } else if (diffDays < 30) {
     const weeks = Math.floor(diffDays / 7);
     return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
@@ -36,8 +43,8 @@ function formatRelativeDate(date) {
 }
 
 // Common subtitle formatter using the "⮑ user • date" pattern
-function formatSubtitle(user, date, additionalInfo = []) {
-  const parts = [" ⮑", user, "•", formatRelativeDate(date)];
+function formatSubtitle(user, date, additionalInfo = [], includeTime = false) {
+  const parts = [" ⮑", user, "•", formatRelativeDate(date, includeTime)];
 
   // Insert additional info before the date
   if (additionalInfo.length > 0) {
