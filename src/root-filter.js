@@ -1,5 +1,5 @@
 /**
- * Usage: node src/root-filter.js [gh|ln|vc|lm|fg]
+ * Usage: node src/root-filter.js [gh|ln|vc|lm|fg|cr]
  */
 
 const { logError, logErrorSilently } = require("./error-logger");
@@ -8,6 +8,7 @@ const githubFilter = require("./github-filter");
 const linearFilter = require("./linear-filter");
 const loomFilter = require("./loom-filter");
 const figmaFilter = require("./figma-filter");
+const cursorFilter = require("./cursor-filter");
 const { sortByDateDescending } = require("./filter-logic");
 
 async function rootFilter(sourceFilter, restQuery) {
@@ -31,6 +32,10 @@ async function rootFilter(sourceFilter, restQuery) {
       }),
       figmaFilter(restQuery).catch((error) => {
         logErrorSilently(error, "figmaFilter");
+        return [];
+      }),
+      cursorFilter(restQuery).catch((error) => {
+        logErrorSilently(error, "cursorFilter");
         return [];
       }),
     ]);
@@ -61,8 +66,8 @@ module.exports = rootFilter;
 if (require.main === module) {
   const query = process.argv.slice(2).join(" ");
   const sourceFilter =
-    query?.match(/^(?<filter>gh|ln|vc|lm|fg)\b/)?.groups?.filter ?? null;
-  const restQuery = query?.replace(/^(?:gh|ln|vc|lm|fg)\b\s*/, "") ?? "";
+    query?.match(/^(?<filter>gh|ln|vc|lm|fg|cr)\b/)?.groups?.filter ?? null;
+  const restQuery = query?.replace(/^(?:gh|ln|vc|lm|fg|cr)\b\s*/, "") ?? "";
 
   rootFilter(sourceFilter, restQuery)
     .then((items) => {
