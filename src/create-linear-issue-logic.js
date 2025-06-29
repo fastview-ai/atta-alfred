@@ -290,9 +290,6 @@ function processParameters(paramWords, metadata) {
 
 // Apply default preferences if no explicit parameters
 function applyDefaultPreferences(params, metadata) {
-  const EXPIRY_TIME = 30 * 60 * 1000; // 30 minutes
-  const now = Date.now();
-  const isExpired = (timestamp) => !timestamp || now - timestamp > EXPIRY_TIME;
   const results = { ...params }; // Clone to avoid modifying original
 
   // Calculate default team ID (user's oldest team)
@@ -302,21 +299,15 @@ function applyDefaultPreferences(params, metadata) {
 
   // Handle team/project fallbacks - only apply defaults if nothing was explicitly set
   if (results.teamId == null && results.projectId == null) {
-    results.projectId = isExpired(metadata.projectsChoiceTimestamp)
-      ? null
-      : metadata.projectsChoice;
-    results.teamId = isExpired(metadata.teamsChoiceTimestamp)
-      ? null
-      : metadata.teamsChoice;
+    results.projectId = metadata.projectsChoice;
+    results.teamId = metadata.teamsChoice;
   } else if (results.teamId == null && results.projectId != null) {
     // If project is set but team is not, try to get team from project
     const project = metadata.projects?.find((p) => p.id === results.projectId);
     if (project?.teams?.nodes?.length > 0) {
       results.teamId = project.teams.nodes[0].id;
     } else {
-      results.teamId = isExpired(metadata.teamsChoiceTimestamp)
-        ? null
-        : metadata.teamsChoice;
+      results.teamId = metadata.teamsChoice;
     }
   }
   // Note: If teamId is already set (explicitly specified), we don't override it
@@ -327,15 +318,11 @@ function applyDefaultPreferences(params, metadata) {
   }
 
   if (results.assigneeId == null) {
-    results.assigneeId = isExpired(metadata.usersChoiceTimestamp)
-      ? null
-      : metadata.usersChoice;
+    results.assigneeId = metadata.usersChoice;
   }
 
   if (results.priorityId == null) {
-    results.priorityId = isExpired(metadata.prioritiesChoiceTimestamp)
-      ? null
-      : metadata.prioritiesChoice;
+    results.priorityId = metadata.prioritiesChoice;
   }
 
   // Look up names for IDs from defaults
