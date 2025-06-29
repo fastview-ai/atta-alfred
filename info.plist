@@ -241,7 +241,7 @@
 				<key>queuemode</key>
 				<integer>1</integer>
 				<key>runningsubtext</key>
-				<string>Loading...</string>
+				<string></string>
 				<key>script</key>
 				<string>${NODE_PATH:-node} ./src/root-filter.js "$1"</string>
 				<key>scriptargtype</key>
@@ -330,7 +330,7 @@
 				<key>queuemode</key>
 				<integer>1</integer>
 				<key>runningsubtext</key>
-				<string>Loading...</string>
+				<string></string>
 				<key>script</key>
 				<string>${NODE_PATH:-node} ./src/root-filter.js "$1"</string>
 				<key>scriptargtype</key>
