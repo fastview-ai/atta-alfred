@@ -45,23 +45,23 @@ This workflow uses Node.js for script execution. By default it uses `node` comma
 ## Features
 
 ### Quick Navigation
-- `fv` - Shows a list of searchable resources
-- `fv ln` - Searches Linear issues by issue identifier or title
-- `fv gh` - Searches GitHub pull requests by branch name or title
-- `fv vc` - Searches Vercel deployments by branch name or title
-- `fv fg` - Searches Figma comments by content
-- `fv lm` - Searches Loom videos by title
+- `aa` - Shows a list of searchable resources
+- `aa ln` - Searches Linear issues by issue identifier or title
+- `aa gh` - Searches GitHub pull requests by branch name or title
+- `aa vc` - Searches Vercel deployments by branch name or title
+- `aa fg` - Searches Figma comments by content
+- `aa lm` - Searches Loom videos by title
 
 ### Environment Variables
-- `fv vc env &lt;prod|dev|preview&gt;` - Copies environment variables from Vercel formatted for your .env file
+- `aa vc env &lt;prod|dev|preview&gt;` - Copies environment variables from Vercel formatted for your .env file
 
 The environment variables are formatted as a .env file and copied to your clipboard.
 
 ### Issue Creation
 
-- `fv &lt;title&gt; -team -project -assignee -priority` - Create a new Linear issue and posts a system notification with the new ticket number
-  - Example: `fv Fix authentication bug -p1`
-  - Example: `fv -eng -canvas -oac -p1 Fix authentication bug`
+- `aa &lt;title&gt; -team -project -assignee -priority` - Create a new Linear issue and posts a system notification with the new ticket number
+  - Example: `aa Fix authentication bug -p1`
+  - Example: `aa -eng -canvas -oac -p1 Fix authentication bug`
 
 - Enable notifications in MacOS settings and ensure Alfred is allowed during Focus mode
 
