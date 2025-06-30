@@ -187,9 +187,9 @@
 				<key>destinationuid</key>
 				<string>D7001DE8-27F5-41C0-93B3-D8282B029029</string>
 				<key>modifiers</key>
-				<integer>1048576</integer>
+				<integer>0</integer>
 				<key>modifiersubtext</key>
-				<string>Copy to clipboard</string>
+				<string></string>
 				<key>vitoclose</key>
 				<false/>
 			</dict>
@@ -197,9 +197,9 @@
 				<key>destinationuid</key>
 				<string>B9C50AEC-5EF8-40AE-A48C-7A44E6F8ACE9</string>
 				<key>modifiers</key>
-				<integer>0</integer>
+				<integer>1048576</integer>
 				<key>modifiersubtext</key>
-				<string></string>
+				<string>Copy to clipboard</string>
 				<key>vitoclose</key>
 				<false/>
 			</dict>
@@ -215,27 +215,6 @@
 	<string>Atta</string>
 	<key>objects</key>
 	<array>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>browser</key>
-				<string></string>
-				<key>skipqueryencode</key>
-				<false/>
-				<key>skipvarencode</key>
-				<false/>
-				<key>spaces</key>
-				<string></string>
-				<key>url</key>
-				<string>{var:url}</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.openurl</string>
-			<key>uid</key>
-			<string>D7001DE8-27F5-41C0-93B3-D8282B029029</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
@@ -284,6 +263,27 @@
 			<string>3BA38398-2266-4718-AAB3-91142449916F</string>
 			<key>version</key>
 			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>skipqueryencode</key>
+				<false/>
+				<key>skipvarencode</key>
+				<false/>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>{var:url}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>D7001DE8-27F5-41C0-93B3-D8282B029029</string>
+			<key>version</key>
+			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -562,6 +562,21 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>soundname</key>
+				<string>Hero</string>
+				<key>systemsound</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.playsound</string>
+			<key>uid</key>
+			<string>8329808E-E6C5-4F4D-A734-17F42BE4F405</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>alfredfiltersresults</key>
 				<true/>
 				<key>alfredfiltersresultsmatchmode</key>
@@ -607,21 +622,6 @@
 			<string>1C5F8B22-0203-411F-B1B9-02550071D9FF</string>
 			<key>version</key>
 			<integer>3</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>soundname</key>
-				<string>Hero</string>
-				<key>systemsound</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.output.playsound</string>
-			<key>uid</key>
-			<string>8329808E-E6C5-4F4D-A734-17F42BE4F405</string>
-			<key>version</key>
-			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1084,6 +1084,10 @@ Open Cursor Dashboard -&gt; dev tools -&gt; network -&gt; API calls -&gt; cookie
 	<dict>
 		<key>CACHE_POLICY</key>
 		<string>cache-only</string>
+		<key>CURSOR_TEAM_ID</key>
+		<string>2814593</string>
+		<key>CURSOR_USER_ID</key>
+		<string>188358357</string>
 		<key>DRY_RUN</key>
 		<string>0</string>
 		<key>FIGMA_FILE</key>
@@ -1100,10 +1104,6 @@ Open Cursor Dashboard -&gt; dev tools -&gt; network -&gt; API calls -&gt; cookie
 		<string>0</string>
 		<key>VERCEL_PROJECT</key>
 		<string>fastviewai/sparrow-ml</string>
-		<key>CURSOR_TEAM_ID</key>
-		<string>2814593</string>
-		<key>CURSOR_USER_ID</key>
-		<string>188358357</string>
 	</dict>
 	<key>variablesdontexport</key>
 	<array>
@@ -1112,7 +1112,7 @@ Open Cursor Dashboard -&gt; dev tools -&gt; network -&gt; API calls -&gt; cookie
 		<string>NODE_PATH</string>
 	</array>
 	<key>version</key>
-	<string>10</string>
+	<string>11</string>
 	<key>webaddress</key>
 	<string>https://github.com/fastview-ai/atta-alfred</string>
 </dict>
